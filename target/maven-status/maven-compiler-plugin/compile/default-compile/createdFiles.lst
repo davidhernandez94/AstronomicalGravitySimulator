@@ -1,5 +1,4 @@
 com\mycompany\mavenproject2\App.class
-com\mycompany\mavenproject2\PrimaryController.class
+com\mycompany\mavenproject2\Planet.class
 module-info.class
-com\mycompany\mavenproject2\SecondaryController.class
 com\mycompany\mavenproject2\MainFXMLController.class
