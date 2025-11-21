@@ -80,9 +80,6 @@ public class MainFXMLController implements Initializable {
         secondWindow("Satellite");
     }
 
-    @FXML
-    private void handeLaunch(ActionEvent event) {
-    }
 
     @FXML
     private void handleResetSatellites(ActionEvent event) {
@@ -117,5 +114,9 @@ public class MainFXMLController implements Initializable {
         secondaryStage.show();
         
         okButton.setOnAction(e -> secondaryStage.close());
+    }
+
+    @FXML
+    private void handleLaunch(ActionEvent event) {
     }
 }
