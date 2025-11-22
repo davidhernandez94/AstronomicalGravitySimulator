@@ -6,10 +6,10 @@
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.mavenproject2.MainFXMLController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.mavenproject2.MainFXMLController">
    <top>
       <HBox maxHeight="-Infinity" prefHeight="30.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
@@ -22,7 +22,7 @@
       </HBox>
    </top>
    <center>
-      <Pane fx:id="mainPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <StackPane fx:id="mainPane" alignment="TOP_LEFT" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
             <VBox fx:id="sidebar" maxWidth="-Infinity" minWidth="0.0" prefHeight="772.0" prefWidth="180.0" spacing="10.0" style="-fx-border-color: black; -fx-border-width: 3;">
                <children>
@@ -59,6 +59,6 @@
                </padding>
             </VBox>
          </children>
-      </Pane>
+      </StackPane>
    </center>
 </BorderPane>

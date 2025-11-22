@@ -16,7 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -27,7 +27,7 @@ import javafx.stage.Stage;
  * @author Astghik Minasyan
  */
 public class MainFXMLController implements Initializable {
-
+    
     @FXML
     private Button collapseButton;
     @FXML
@@ -49,7 +49,7 @@ public class MainFXMLController implements Initializable {
     @FXML
     private Button settingsButton;
     @FXML
-    private Pane mainPane;
+    private StackPane mainPane;
 
     /**
      * Initializes the controller class.
@@ -80,7 +80,6 @@ public class MainFXMLController implements Initializable {
         secondWindow("Satellite");
     }
 
-
     @FXML
     private void handleResetSatellites(ActionEvent event) {
     }
@@ -91,6 +90,10 @@ public class MainFXMLController implements Initializable {
 
     @FXML
     private void handleSettings(ActionEvent event) {
+    }
+    
+    @FXML
+    private void handleLaunch(ActionEvent event) {
     }
     
     public void secondWindow (String name) {
@@ -114,9 +117,5 @@ public class MainFXMLController implements Initializable {
         secondaryStage.show();
         
         okButton.setOnAction(e -> secondaryStage.close());
-    }
-
-    @FXML
-    private void handleLaunch(ActionEvent event) {
     }
 }
