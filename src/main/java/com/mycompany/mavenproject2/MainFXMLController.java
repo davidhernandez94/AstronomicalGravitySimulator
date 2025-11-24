@@ -10,6 +10,7 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -20,6 +21,7 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -126,6 +128,7 @@ public class MainFXMLController implements Initializable {
         coordinateBox.setAlignment(Pos.CENTER);
 
         Button doneButton = new Button("Done");
+        doneButton.setDisable(true);
 
         VBox layout = new VBox();
         layout.getChildren().addAll(sizeLabel, sizeSlider, colorLabel, colorPicker, coordinateBox, doneButton);
@@ -137,24 +140,32 @@ public class MainFXMLController implements Initializable {
         secondaryStage.setScene(secondaryScene);
         secondaryStage.show();
 
-        double xProperty = Double.parseDouble(xfield.getText());
-        double yProperty = Double.parseDouble(yfield.getText());
-
-        sizeSlider.valueProperty().addListener(cl -> {
-            radius = sizeSlider.getValue();
+        EventHandler coordinateHandler = (EventHandler<KeyEvent>) ((KeyEvent) -> {
+            if (xfield.getText().matches("^\\d+$") && yfield.getText().matches("^\\d+$")) {
+                doneButton.setDisable(false);
+            } else {
+                doneButton.setDisable(true);
+            }
         });
-
-        Color color = colorPicker.getValue();
-
+        
+        xfield.setOnKeyReleased(coordinateHandler);
+        yfield.setOnKeyReleased(coordinateHandler);
+        
         doneButton.setOnAction(e -> {
-            System.out.println("aaa");
-            secondaryStage.close();
+            double xProperty = Double.parseDouble(xfield.getText());
+            double yProperty = Double.parseDouble(yfield.getText());
 
+            sizeSlider.valueProperty().addListener(cl -> {
+                radius = sizeSlider.getValue();
+            });
+
+            Color color = colorPicker.getValue();
 //            if (name.equals("Planet")) {
 //                addPlanet(xProperty, yProperty, radius, color);
 //            } else {
 //                addSatellite(xProperty, yProperty, radius, color);
 //            }
+            secondaryStage.close();
         });
     }
 
