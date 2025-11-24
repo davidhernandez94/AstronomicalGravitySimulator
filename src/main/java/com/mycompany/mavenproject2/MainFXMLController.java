@@ -6,6 +6,7 @@ package com.mycompany.mavenproject2;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
@@ -33,7 +34,7 @@ import javafx.stage.Stage;
 public class MainFXMLController implements Initializable {
 
     public double simulationSpeed;
-    public DoubleProperty radius;
+    public double radius;
 
     @FXML
     private Button collapseButton;
@@ -136,11 +137,11 @@ public class MainFXMLController implements Initializable {
         secondaryStage.setScene(secondaryScene);
         secondaryStage.show();
 
-        DoubleProperty xProperty = new SimpleDoubleProperty(Double.parseDouble(xfield.getText()));
-        DoubleProperty yProperty = new SimpleDoubleProperty(Double.parseDouble(yfield.getText()));
+        double xProperty = Double.parseDouble(xfield.getText());
+        double yProperty = Double.parseDouble(yfield.getText());
 
         sizeSlider.valueProperty().addListener(cl -> {
-            radius = new SimpleDoubleProperty(sizeSlider.getValue());
+            radius = sizeSlider.getValue();
         });
 
         Color color = colorPicker.getValue();
@@ -148,29 +149,29 @@ public class MainFXMLController implements Initializable {
         doneButton.setOnAction(e -> {
             System.out.println("aaa");
             secondaryStage.close();
-            
-            if (name.equals("Planet")) {
-                addPlanet(xProperty, yProperty, radius, color);
-            } else {
-                addSatellite(xProperty, yProperty, radius, color);
-            }
+
+//            if (name.equals("Planet")) {
+//                addPlanet(xProperty, yProperty, radius, color);
+//            } else {
+//                addSatellite(xProperty, yProperty, radius, color);
+//            }
         });
     }
-    
+
     public void simulationSpeedHandler() {
-         speedSlider.valueProperty().addListener(cl -> {
+        speedSlider.valueProperty().addListener(cl -> {
             simulationSpeed = speedSlider.getValue();
         });
     }
 
-    public void addPlanet(DoubleProperty x, DoubleProperty y, DoubleProperty radius, Color color) {
+    public void addPlanet(double x, double y, double radius, Color color) {
 //        // uncomment once branches merge
 //        Planet planet = new Planet(x, y, radius, color);
 //        mainPane.getChildren().remove(sidebar);
 //        mainPane.getChildren().addAll(planet, sidebar);
     }
 
-    public void addSatellite(DoubleProperty x, DoubleProperty y, DoubleProperty radius, Color color) {
+    public void addSatellite(double x, double y, double radius, Color color) {
         // TODO
     }
 }
