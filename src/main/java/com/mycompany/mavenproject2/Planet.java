@@ -4,7 +4,6 @@
  */
 package com.mycompany.mavenproject2;
 
-import javafx.beans.property.DoubleProperty;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
@@ -12,12 +11,51 @@ import javafx.scene.shape.Circle;
  *
  * @author David Hernandez
  */
-public class Planet extends Circle {
-    private DoubleProperty x;
-    private DoubleProperty y;
-    private DoubleProperty radius;
-    private Color colour;
+public class Planet {
+    protected Double x;
+    protected Double y;
+    protected Double radius;
+    protected Color colour;
+    protected Circle circle;
+    
 
-    
-    
+    public Planet(double x, double y, double radius, Color colour) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.colour = colour;
+        this.circle = new Circle(x, y, radius, colour);
+    }
+
+    public Double getX() {
+        return x;
+    }
+
+    public void setX(Double x) {
+        this.x = x;
+    }
+
+    public Double getY() {
+        return y;
+    }
+
+    public void setY(Double y) {
+        this.y = y;
+    }
+
+    public Double getRadius() {
+        return radius;
+    }
+
+    public void setRadius(Double radius) {
+        this.radius = radius;
+    }
+
+    public Color getColour() {
+        return colour;
+    }
+
+    public void setColour(Color colour) {
+        this.colour = colour;
+    }
 }
