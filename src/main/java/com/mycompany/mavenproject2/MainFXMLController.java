@@ -9,6 +9,8 @@ import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -101,6 +103,27 @@ public class MainFXMLController implements Initializable {
 
     @FXML
     private void handleSettings(ActionEvent event) {
+         Stage settingsStage = new Stage();
+        settingsStage.setTitle("Settings");
+        
+        Label volumeLabel = new Label("Volume: ");
+        Slider volumeSlider = new Slider(0, 100, 100);
+        volumeSlider.setShowTickLabels(true);
+        volumeSlider.setShowTickMarks(true);
+        volumeSlider.setMajorTickUnit(20);
+        
+        HBox volumeBox = new HBox(volumeLabel, volumeSlider);
+        
+        volumeBox.setPadding(new Insets(5, 5, 5, 5));
+        volumeBox.setSpacing(15);
+        volumeBox.setAlignment(Pos.CENTER);
+        
+        volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                // TODO: sound
+            }
+        });
     }
 
     @FXML
@@ -118,7 +141,7 @@ public class MainFXMLController implements Initializable {
         Label colorLabel = new Label("Color");
         Label xLabel = new Label("Layout x: ");
         Label yLabel = new Label("Layout y: ");
-        Slider sizeSlider = new Slider(0, 30, 0);
+        Slider sizeSlider = new Slider(20, 200, 0);
         ColorPicker colorPicker = new ColorPicker(Color.RED);
         TextField xfield = new TextField();
         TextField yfield = new TextField();
@@ -155,17 +178,20 @@ public class MainFXMLController implements Initializable {
             double xProperty = Double.parseDouble(xfield.getText());
             double yProperty = Double.parseDouble(yfield.getText());
 
+            radius = sizeSlider.getMin();
             sizeSlider.valueProperty().addListener(cl -> {
                 radius = sizeSlider.getValue();
             });
 
             Color color = colorPicker.getValue();
-//            if (name.equals("Planet")) {
-//                addPlanet(xProperty, yProperty, radius, color);
-//            } else {
-//                addSatellite(xProperty, yProperty, radius, color);
-//            }
+//            
             secondaryStage.close();
+            
+            if (name.equals("Planet")) {
+                addPlanet(xProperty, yProperty, radius, color);
+            } else {
+                addSatellite(xProperty, yProperty, radius, color);
+            }
         });
     }
 
@@ -176,10 +202,9 @@ public class MainFXMLController implements Initializable {
     }
 
     public void addPlanet(double x, double y, double radius, Color color) {
-//        // uncomment once branches merge
-//        Planet planet = new Planet(x, y, radius, color);
-//        mainPane.getChildren().remove(sidebar);
-//        mainPane.getChildren().addAll(planet, sidebar);
+        Planet planet = new Planet(x, y, radius, color);
+        mainPane.getChildren().remove(sidebar);
+        mainPane.getChildren().addAll(planet.circle, sidebar);
     }
 
     public void addSatellite(double x, double y, double radius, Color color) {
