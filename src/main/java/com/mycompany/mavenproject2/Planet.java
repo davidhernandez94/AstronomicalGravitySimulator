@@ -25,6 +25,8 @@ public class Planet {
         this.radius = radius;
         this.colour = colour;
         this.circle = new Circle(x, y, radius, colour);
+        circle.setTranslateX(x);
+        circle.setTranslateY(y);
     }
 
     public Double getX() {
