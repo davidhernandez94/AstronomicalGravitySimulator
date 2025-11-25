@@ -103,21 +103,21 @@ public class MainFXMLController implements Initializable {
 
     @FXML
     private void handleSettings(ActionEvent event) {
-         Stage settingsStage = new Stage();
+        Stage settingsStage = new Stage();
         settingsStage.setTitle("Settings");
-        
+
         Label volumeLabel = new Label("Volume: ");
         Slider volumeSlider = new Slider(0, 100, 100);
         volumeSlider.setShowTickLabels(true);
         volumeSlider.setShowTickMarks(true);
         volumeSlider.setMajorTickUnit(20);
-        
+
         HBox volumeBox = new HBox(volumeLabel, volumeSlider);
-        
+
         volumeBox.setPadding(new Insets(5, 5, 5, 5));
         volumeBox.setSpacing(15);
         volumeBox.setAlignment(Pos.CENTER);
-        
+
         volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -141,10 +141,17 @@ public class MainFXMLController implements Initializable {
         Label colorLabel = new Label("Color");
         Label xLabel = new Label("Layout x: ");
         Label yLabel = new Label("Layout y: ");
-        Slider sizeSlider = new Slider(20, 200, 0);
+        Slider sizeSlider = new Slider(0, 150, 10);
         ColorPicker colorPicker = new ColorPicker(Color.RED);
         TextField xfield = new TextField();
         TextField yfield = new TextField();
+        
+        sizeSlider.setMajorTickUnit(10);
+        sizeSlider.setShowTickMarks(true);
+        
+        if (name.equals("Satellite")) {
+            sizeSlider.setDisable(true);
+        }
 
         HBox coordinateBox = new HBox(xLabel, xfield, yLabel, yfield);
         coordinateBox.setSpacing(10);
@@ -170,23 +177,23 @@ public class MainFXMLController implements Initializable {
                 doneButton.setDisable(true);
             }
         });
-        
+
+        radius = sizeSlider.getValue();
+        sizeSlider.valueProperty().addListener(cl -> {
+            radius = sizeSlider.getValue();
+        });
+
         xfield.setOnKeyReleased(coordinateHandler);
         yfield.setOnKeyReleased(coordinateHandler);
-        
+
         doneButton.setOnAction(e -> {
             double xProperty = Double.parseDouble(xfield.getText());
             double yProperty = Double.parseDouble(yfield.getText());
 
-            radius = sizeSlider.getMin();
-            sizeSlider.valueProperty().addListener(cl -> {
-                radius = sizeSlider.getValue();
-            });
-
             Color color = colorPicker.getValue();
 //            
             secondaryStage.close();
-            
+
             if (name.equals("Planet")) {
                 addPlanet(xProperty, yProperty, radius, color);
             } else {
