@@ -4,6 +4,9 @@
  */
 package com.mycompany.mavenproject2;
 
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+
 /**
  *
  * @author 6309110
@@ -15,14 +18,36 @@ public class Satellite {
     protected double velY;
     protected double accX;
     protected double accY;
+    protected Circle circle;
+    protected final double mass = Math.pow(RADIUS, 2);
     
-    public Satellite(double x, double y) {
+    protected final static double RADIUS = 15;
+    
+    public Satellite(double x, double y, Color colour) {
         this.posX = x;
         this.posY = y;
         this.velX = 0;
         this.velY = 0;
         this.accX = 0;
         this.accY = 0;
+        this.circle = new Circle(x, y, RADIUS, colour);
+        this.circle.setId("satellite");
+    }
+    
+    /**
+     * update velocity based on acceleration every iteration of the animation
+     */
+    public void changeVelocity() {
+        velX += accX;
+        velY += accY;
+    }
+    
+    /**
+     * update position based on velocity every iteration of the animation
+     */
+    public void changePosition() {
+        posX += velX;
+        posY += velY;
     }
 
     public double getPosX() {

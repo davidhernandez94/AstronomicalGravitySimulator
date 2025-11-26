@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -22,42 +23,48 @@
       </HBox>
    </top>
    <center>
-      <StackPane fx:id="mainPane" alignment="TOP_LEFT" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <StackPane alignment="TOP_LEFT" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <VBox fx:id="sidebar" maxWidth="-Infinity" minWidth="0.0" prefHeight="772.0" prefWidth="180.0" spacing="10.0" style="-fx-border-color: black; -fx-border-width: 3;">
+            <HBox prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Button fx:id="newPlanetButton" mnemonicParsing="false" onAction="#handleNewPlanet" prefHeight="32.0" prefWidth="109.0" text="+ New Planet" textAlignment="CENTER">
-                     <VBox.margin>
-                        <Insets top="5.0" />
-                     </VBox.margin>
-                  </Button>
-                  <Button fx:id="newSatelliteButton" mnemonicParsing="false" onAction="#handleNewSatellite" prefHeight="32.0" prefWidth="109.0" text="+ New Satellite">
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin></Button>
-                  <Button fx:id="newButton" mnemonicParsing="false" onAction="#handleLaunch" prefHeight="45.0" prefWidth="153.0" text="LAUNCH" />
-                  <Label alignment="CENTER" text="Speed of simulation">
-                     <VBox.margin>
-                        <Insets top="30.0" />
-                     </VBox.margin>
-                  </Label>
-                  <Slider fx:id="speedSlider" majorTickUnit="0.25" max="2.0" showTickLabels="true" showTickMarks="true" value="1.0" />
-                  <Button fx:id="resetSatellitesButton" mnemonicParsing="false" onAction="#handleResetSatellites" text="Reset Satellites">
-                     <VBox.margin>
-                        <Insets top="150.0" />
-                     </VBox.margin>
-                  </Button>
-                  <Button fx:id="resetAllButton" mnemonicParsing="false" onAction="#handleResetAll" prefHeight="25.0" prefWidth="95.0" text="Reset All" />
-                  <Button fx:id="settingsButton" mnemonicParsing="false" onAction="#handleSettings" prefHeight="25.0" prefWidth="95.0" text="Settings">
-                     <VBox.margin>
-                        <Insets top="200.0" />
-                     </VBox.margin>
-                  </Button>
+                  <VBox fx:id="sidebar" maxWidth="-Infinity" minWidth="0.0" prefHeight="772.0" prefWidth="180.0" spacing="10.0" style="-fx-border-color: black; -fx-border-width: 3;">
+                     <children>
+                        <Button fx:id="newPlanetButton" mnemonicParsing="false" onAction="#handleNewPlanet" prefHeight="32.0" prefWidth="109.0" text="+ New Planet" textAlignment="CENTER">
+                           <VBox.margin>
+                              <Insets top="5.0" />
+                           </VBox.margin>
+                        </Button>
+                        <Button fx:id="newSatelliteButton" mnemonicParsing="false" onAction="#handleNewSatellite" prefHeight="32.0" prefWidth="109.0" text="+ New Satellite">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </Button>
+                        <Button fx:id="newButton" mnemonicParsing="false" onAction="#handleLaunch" prefHeight="45.0" prefWidth="153.0" text="LAUNCH" />
+                        <Label alignment="CENTER" text="Speed of simulation">
+                           <VBox.margin>
+                              <Insets top="30.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Slider fx:id="speedSlider" majorTickUnit="0.25" max="2.0" showTickLabels="true" showTickMarks="true" value="1.0" />
+                        <Button fx:id="resetSatellitesButton" mnemonicParsing="false" onAction="#handleResetSatellites" text="Reset Satellites">
+                           <VBox.margin>
+                              <Insets top="150.0" />
+                           </VBox.margin>
+                        </Button>
+                        <Button fx:id="resetAllButton" mnemonicParsing="false" onAction="#handleResetAll" prefHeight="25.0" prefWidth="95.0" text="Reset All" />
+                        <Button fx:id="settingsButton" mnemonicParsing="false" onAction="#handleSettings" prefHeight="25.0" prefWidth="95.0" text="Settings">
+                           <VBox.margin>
+                              <Insets top="200.0" />
+                           </VBox.margin>
+                        </Button>
+                     </children>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                  </VBox>
+                  <Pane fx:id="simPane" prefHeight="770.0" prefWidth="821.0" />
                </children>
-               <padding>
-                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-               </padding>
-            </VBox>
+            </HBox>
          </children>
       </StackPane>
    </center>

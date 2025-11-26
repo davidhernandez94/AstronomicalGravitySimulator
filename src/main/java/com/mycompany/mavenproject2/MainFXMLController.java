@@ -5,10 +5,9 @@
 package com.mycompany.mavenproject2;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
-import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.animation.TranslateTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -24,21 +23,29 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * FXML Controller class
  *
- * @author Astghik Minasyan
+ * @author Astghik Minasyan, David Hernandez, James Ha
  */
 public class MainFXMLController implements Initializable {
 
-    public double simulationSpeed;
-    public double radius;
+    private Duration simulationSpeed;
+    private TranslateTransition transition = new TranslateTransition();
+    private boolean running = false;
+    private ArrayList<Planet> planets = new ArrayList<>();
+    
+    // should be removed after, see IMPORTANT comment way below
+    private final Satellite satellite = addSatellite(600, 10, Color.CORAL);
+
 
     @FXML
     private Button collapseButton;
@@ -60,8 +67,11 @@ public class MainFXMLController implements Initializable {
     private Button resetAllButton;
     @FXML
     private Button settingsButton;
+    //private Pane simPane;
+    private BorderPane mainPane;
     @FXML
-    private StackPane mainPane;
+    private Pane simPane;
+    
 
     /**
      * Initializes the controller class.
@@ -69,7 +79,12 @@ public class MainFXMLController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         speedSlider.setDisable(true);
-        simulationSpeed = 0;
+        simulationSpeed = new Duration(1000);
+        transition.setOnFinished(eh -> {
+            if (running) {
+                launch();
+            }
+        });
     }
 
     @FXML
@@ -128,9 +143,9 @@ public class MainFXMLController implements Initializable {
 
     @FXML
     private void handleLaunch(ActionEvent event) {
-        simulationSpeed = 1;
         speedSlider.setDisable(false);
         simulationSpeedHandler();
+        launch();
     }
 
     public void secondWindow(String name) {
@@ -178,9 +193,10 @@ public class MainFXMLController implements Initializable {
             }
         });
 
-        radius = sizeSlider.getValue();
+        double[] radius = new double[1];
+        radius[0] = sizeSlider.getValue();
         sizeSlider.valueProperty().addListener(cl -> {
-            radius = sizeSlider.getValue();
+            radius[0] = sizeSlider.getValue();
         });
 
         xfield.setOnKeyReleased(coordinateHandler);
@@ -191,30 +207,77 @@ public class MainFXMLController implements Initializable {
             double yProperty = Double.parseDouble(yfield.getText());
 
             Color color = colorPicker.getValue();
-//            
+            
             secondaryStage.close();
 
             if (name.equals("Planet")) {
-                addPlanet(xProperty, yProperty, radius, color);
+                addPlanet(xProperty, yProperty, radius[0], color);
             } else {
-                addSatellite(xProperty, yProperty, radius, color);
+                addSatellite(xProperty, yProperty, color);
             }
         });
     }
 
     public void simulationSpeedHandler() {
         speedSlider.valueProperty().addListener(cl -> {
-            simulationSpeed = speedSlider.getValue();
+            simulationSpeed = new Duration(((int) speedSlider.getValue()) * 100);
         });
     }
 
     public void addPlanet(double x, double y, double radius, Color color) {
         Planet planet = new Planet(x, y, radius, color);
-        mainPane.getChildren().remove(sidebar);
-        mainPane.getChildren().addAll(planet.circle, sidebar);
+        mainPane.getChildren().add(planet.circle);
+        planets.add(planet);
     }
 
-    public void addSatellite(double x, double y, double radius, Color color) {
-        // TODO
+    public Satellite addSatellite(double x, double y, Color color) {
+        Satellite satellite = new Satellite(x, y, color);
+        mainPane.getChildren().add(satellite.circle);
+        return satellite;
+    }
+    
+    public void launch() {
+        // main simulation is here
+        
+        /*
+        TODO: IMPORTANT (written by David)
+        I think we should have only one satellite going at once because
+        otherwise there's too many animation going and it gets complicated.
+        I put this line (right below) to make it easier but we have to
+        change the UI so that only one satellite can go at once
+        Let me know if that's ok by text or whatever
+        */
+        
+        // change this after 
+        simulationSpeed = new Duration(1000);
+        transition.setDuration(simulationSpeed);
+        
+        running = true;
+        double forceX;
+        double forceY;
+        System.out.println("start");
+        forceX = 0;
+        forceY = 0;
+        for (Planet planet : planets) {
+            System.out.println("??");
+            forceX += planet.mass * satellite.mass / Math.pow(planet.x - satellite.posX, 2)
+                    * planet.x > satellite.posX ? 1 : -1;
+            System.out.println("planet: " + planet.mass);
+            System.out.println("satellite: " + satellite.mass);
+            System.out.println("distance: " + Math.pow(planet.y - satellite.posY, 2));
+            forceY += planet.mass * satellite.mass / Math.pow(planet.y - satellite.posY, 2)
+                    * planet.y > satellite.posY ? 1 : -1;
+        }
+        System.out.println("force x: " + forceX + " force y: " + forceY);
+        satellite.accX = forceX * 50; // arbitrary value
+        satellite.accY = forceY * 50;
+        satellite.changeVelocity();
+        satellite.changePosition();
+        transition.setNode(satellite.circle);
+        transition.setByX(satellite.velX);
+        transition.setByY(satellite.velY); 
+        System.out.println(transition.getDuration().toSeconds() + " trans: " + transition.getByX() + " " + transition.getByY());
+        System.out.println("end");
+        transition.play();
     }
 }

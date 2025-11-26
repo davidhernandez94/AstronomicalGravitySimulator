@@ -12,11 +12,12 @@ import javafx.scene.shape.Circle;
  * @author David Hernandez
  */
 public class Planet {
-    protected Double x;
-    protected Double y;
-    protected Double radius;
+    protected double x;
+    protected double y;
+    protected double radius;
     protected Color colour;
     protected Circle circle;
+    protected final double mass = 80;
     
 
     public Planet(double x, double y, double radius, Color colour) {
