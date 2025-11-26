@@ -17,7 +17,7 @@ public class Planet {
     protected double radius;
     protected Color colour;
     protected Circle circle;
-    protected final double mass = 80;
+    protected double mass;
     
 
     public Planet(double x, double y, double radius, Color colour) {
@@ -28,6 +28,7 @@ public class Planet {
         this.circle = new Circle(x, y, radius, colour);
         circle.setTranslateX(x);
         circle.setTranslateY(y);
+        this.mass = Math.pow(radius, 3);
     }
 
     public Double getX() {

@@ -19,7 +19,7 @@ public class Satellite {
     protected double accX;
     protected double accY;
     protected Circle circle;
-    protected final double mass = Math.pow(RADIUS, 2);
+    protected final double mass = Math.pow(RADIUS, 3);
     
     protected final static double RADIUS = 15;
     
@@ -32,6 +32,8 @@ public class Satellite {
         this.accY = 0;
         this.circle = new Circle(x, y, RADIUS, colour);
         this.circle.setId("satellite");
+        this.circle.setTranslateX(x);
+        this.circle.setTranslateY(y);
     }
     
     /**

@@ -26,8 +26,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -44,7 +46,7 @@ public class MainFXMLController implements Initializable {
     private ArrayList<Planet> planets = new ArrayList<>();
     
     // should be removed after, see IMPORTANT comment way below
-    private final Satellite satellite = addSatellite(600, 10, Color.CORAL);
+    private Satellite satellite;
 
 
     @FXML
@@ -67,19 +69,18 @@ public class MainFXMLController implements Initializable {
     private Button resetAllButton;
     @FXML
     private Button settingsButton;
-    //private Pane simPane;
-    private BorderPane mainPane;
     @FXML
-    private Pane simPane;
+    private StackPane simPane;
     
 
     /**
      * Initializes the controller class.
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void initialize(URL url, ResourceBundle rb) {    
+        satellite = addSatellite(400, 400, Color.CORAL);
         speedSlider.setDisable(true);
-        simulationSpeed = new Duration(1000);
+        simulationSpeed = new Duration(50);
         transition.setOnFinished(eh -> {
             if (running) {
                 launch();
@@ -226,13 +227,13 @@ public class MainFXMLController implements Initializable {
 
     public void addPlanet(double x, double y, double radius, Color color) {
         Planet planet = new Planet(x, y, radius, color);
-        mainPane.getChildren().add(planet.circle);
+        simPane.getChildren().add(planet.circle);
         planets.add(planet);
     }
 
     public Satellite addSatellite(double x, double y, Color color) {
         Satellite satellite = new Satellite(x, y, color);
-        mainPane.getChildren().add(satellite.circle);
+        simPane.getChildren().add(satellite.circle);
         return satellite;
     }
     
@@ -249,30 +250,29 @@ public class MainFXMLController implements Initializable {
         */
         
         // change this after 
-        simulationSpeed = new Duration(1000);
+        simulationSpeed = new Duration(800);
         transition.setDuration(simulationSpeed);
         
         running = true;
-        double forceX;
-        double forceY;
-        System.out.println("start");
-        forceX = 0;
-        forceY = 0;
+        double forceX = 0;
+        double forceY = 0;
         for (Planet planet : planets) {
-            System.out.println("??");
-            forceX += planet.mass * satellite.mass / Math.pow(planet.x - satellite.posX, 2)
-                    * planet.x > satellite.posX ? 1 : -1;
-            System.out.println("planet: " + planet.mass);
-            System.out.println("satellite: " + satellite.mass);
-            System.out.println("distance: " + Math.pow(planet.y - satellite.posY, 2));
-            forceY += planet.mass * satellite.mass / Math.pow(planet.y - satellite.posY, 2)
-                    * planet.y > satellite.posY ? 1 : -1;
+            double distance = Math.sqrt(Math.pow(planet.x - satellite.posX, 2) + Math.pow(planet.y - satellite.posY, 2));
+            forceX += (planet.mass * satellite.mass / (distance + 30))
+                    * (planet.x > satellite.posX ? 1 : -1);
+            System.out.println("planet: mass" + planet.mass + " x" + planet.x + " y" + planet.y);
+            System.out.println("satellite: mass" + satellite.mass + " x" + satellite.posX + " y" + satellite.posY);
+            System.out.println("distanceX: " + (planet.x - satellite.posX));
+            System.out.println("distanceY: " + (planet.y - satellite.posY));
+            forceY += (planet.mass * satellite.mass / (distance + 30))
+                    * (planet.y > satellite.posY ? 1 : -1);
         }
         System.out.println("force x: " + forceX + " force y: " + forceY);
-        satellite.accX = forceX * 50; // arbitrary value
-        satellite.accY = forceY * 50;
+        satellite.accX = forceX / 100000; // arbitrary value
+        satellite.accY = forceY / 100000;
         satellite.changeVelocity();
         satellite.changePosition();
+        System.out.println("satellite posx" + satellite.posX + " posy" + satellite.posY + " velx" + satellite.velX + " vely" + satellite.velY);
         transition.setNode(satellite.circle);
         transition.setByX(satellite.velX);
         transition.setByY(satellite.velY); 
