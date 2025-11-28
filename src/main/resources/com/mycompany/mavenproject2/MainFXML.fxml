@@ -23,7 +23,7 @@
                   <Insets left="150.0" />
                </HBox.margin>
             </Label>
-            <Button fx:id="stopPlayButton" mnemonicParsing="false" style="-fx-background-color: #b54e64; -fx-text-fill: white; -fx-font-family: consolas; -fx-font-weight: 900;" text="Stop">
+            <Button fx:id="stopPlayButton" mnemonicParsing="false" onAction="#handleStopPlay" style="-fx-background-color: #b54e64; -fx-text-fill: white; -fx-font-family: consolas; -fx-font-weight: 900;" text="Stop">
                <HBox.margin>
                   <Insets left="150.0" right="80.0" top="2.0" />
                </HBox.margin>
@@ -57,7 +57,7 @@
                               <Insets left="16.0" right="18.0" />
                            </VBox.margin>
                         </Button>
-                        <Button fx:id="newButton" mnemonicParsing="false" onAction="#handleLaunch" prefHeight="45.0" prefWidth="153.0" style="-fx-background-color: #6f8bed; -fx-text-fill: white; -fx-font-family: consolas; -fx-font-weight: 900;" text="LAUNCH">
+                        <Button fx:id="launchButton" mnemonicParsing="false" onAction="#handleLaunch" prefHeight="45.0" prefWidth="153.0" style="-fx-background-color: #6f8bed; -fx-text-fill: white; -fx-font-family: consolas; -fx-font-weight: 900;" text="LAUNCH">
                            <VBox.margin>
                               <Insets top="20.0" />
                            </VBox.margin>

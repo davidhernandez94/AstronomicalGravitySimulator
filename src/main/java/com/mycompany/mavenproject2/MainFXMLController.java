@@ -4,8 +4,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.animation.TranslateTransition;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -21,13 +19,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -42,7 +37,7 @@ public class MainFXMLController implements Initializable {
     private TranslateTransition transition = new TranslateTransition();
     private boolean running = false;
     private ArrayList<Planet> planets = new ArrayList<>();
-    
+
     // should be removed after, see IMPORTANT comment way below
     private Satellite satellite;
 
@@ -54,8 +49,6 @@ public class MainFXMLController implements Initializable {
     private Button newPlanetButton;
     @FXML
     private Button newSatelliteButton;
-    @FXML
-    private Button newButton;
     @FXML
     private Slider speedSlider;
     @FXML
@@ -76,6 +69,8 @@ public class MainFXMLController implements Initializable {
     private Label accelerationLabel;
     @FXML
     private StackPane simPane;
+    @FXML
+    private Button launchButton;
 
     /**
      * Initializes the controller class.
@@ -85,9 +80,10 @@ public class MainFXMLController implements Initializable {
         satellite = addSatellite(400, 400, Color.CORAL);
         speedSlider.setDisable(true);
         simulationSpeed = new Duration(50);
+        stopPlayButton.setDisable(true);
         transition.setOnFinished(eh -> {
             if (running) {
-                launch();
+                updateSimulation();
             }
         });
     }
@@ -152,7 +148,31 @@ public class MainFXMLController implements Initializable {
     private void handleLaunch(ActionEvent event) {
         speedSlider.setDisable(false);
         simulationSpeedHandler();
-        launch();
+        running = true;
+        updateSimulation();
+        stopPlayButton.setDisable(false);
+        launchButton.setDisable(true);
+    }
+
+    @FXML
+    private void handleStopPlay(ActionEvent event) {
+        if (running) {
+            running = false;
+            transition.stop();
+            stopPlayButton.setStyle("-fx-background-color: #216e5a;"
+                    + "-fx-font-family: consolas;"
+                    + "-fx-text-fill: white;"
+                    + "-fx-font-weight: 900;");
+            stopPlayButton.setText("Play");
+        } else {
+            running = true;
+            updateSimulation();
+            stopPlayButton.setStyle("-fx-background-color: #b54e64;"
+                    + "-fx-font-family: consolas;"
+                    + "-fx-text-fill: white;"
+                    + "-fx-font-weight: 900;");
+            stopPlayButton.setText("Stop");
+        }
     }
 
     public void newObjectWindow(String name) {
@@ -199,7 +219,7 @@ public class MainFXMLController implements Initializable {
                 doneButton.setDisable(true);
             }
         });
-        
+
         double[] radius = new double[1];
         radius[0] = sizeSlider.getValue();
         sizeSlider.valueProperty().addListener(cl -> {
@@ -242,7 +262,7 @@ public class MainFXMLController implements Initializable {
         return satellite;
     }
 
-    public void launch() {
+    public void updateSimulation() {
         // main simulation is here
 
         /*
@@ -253,7 +273,6 @@ public class MainFXMLController implements Initializable {
         change the UI so that only one satellite can go at once
         Let me know if that's ok by text or whatever
          */
-        
         // change this after 
         simulationSpeed = new Duration(800);
         transition.setDuration(simulationSpeed);
@@ -271,7 +290,7 @@ public class MainFXMLController implements Initializable {
             System.out.println("distanceY: " + (planet.y - satellite.posY));
             forceY += (planet.mass * satellite.mass / (distance + 30))
                     * (planet.y > satellite.posY ? 1 : -1);
-        }
+            }
         System.out.println("force x: " + forceX + " force y: " + forceY);
         satellite.accX = forceX / 100000; // arbitrary value
         satellite.accY = forceY / 100000;
