@@ -98,8 +98,5 @@ public class Satellite {
 
     public void setAccY(double accY) {
         this.accY = accY;
-    }
-    
-    
-    
+    } 
 }

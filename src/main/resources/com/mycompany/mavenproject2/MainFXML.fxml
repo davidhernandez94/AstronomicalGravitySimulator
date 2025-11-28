@@ -11,10 +11,29 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.mavenproject2.MainFXMLController">
    <top>
-      <HBox maxHeight="-Infinity" prefHeight="30.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <HBox maxHeight="30.0" prefHeight="30.0" prefWidth="200.0" style="-fx-background-color: #001d7d;" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="collapseButton" mnemonicParsing="false" onAction="#collapseHandle" text="&lt;" />
-            <Button fx:id="boton" mnemonicParsing="false" text="Button" />
+            <Button fx:id="collapseButton" mnemonicParsing="false" onAction="#collapseHandler" style="-fx-background-color: #4b61ab; -fx-text-fill: white;" text="☰">
+               <HBox.margin>
+                  <Insets right="80.0" />
+               </HBox.margin>
+            </Button>
+            <Label fx:id="timeLabel" prefHeight="30.0" style="-fx-text-fill: white; -fx-font-family: consolas;" text="00:00:00">
+               <HBox.margin>
+                  <Insets left="150.0" />
+               </HBox.margin>
+            </Label>
+            <Button fx:id="stopPlayButton" mnemonicParsing="false" style="-fx-background-color: #b54e64; -fx-text-fill: white; -fx-font-family: consolas; -fx-font-weight: 900;" text="Stop">
+               <HBox.margin>
+                  <Insets left="150.0" right="80.0" top="2.0" />
+               </HBox.margin>
+            </Button>
+            <Label fx:id="velocityLabel" prefHeight="30.0" style="-fx-text-fill: white; -fx-font-family: consolas;" text="Velocity: 00.00 AU/s">
+               <HBox.margin>
+                  <Insets right="60.0" />
+               </HBox.margin>
+            </Label>
+            <Label fx:id="accelerationLabel" prefHeight="30.0" style="-fx-text-fill: white; -fx-font-family: consolas;" text="Acceleration: 00.00 AU/s²" />
          </children>
          <padding>
             <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
@@ -22,38 +41,46 @@
       </HBox>
    </top>
    <center>
-      <StackPane alignment="TOP_LEFT" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <StackPane fx:id="mainPane" alignment="TOP_LEFT" prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: black;" BorderPane.alignment="CENTER">
          <children>
             <HBox prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <VBox fx:id="sidebar" maxWidth="-Infinity" minWidth="0.0" prefHeight="772.0" prefWidth="180.0" spacing="10.0" style="-fx-border-color: black; -fx-border-width: 3;">
+                  <VBox fx:id="sidebar" maxWidth="180.0" minWidth="0.0" prefHeight="772.0" prefWidth="180.0" spacing="10.0" style="-fx-border-color: black; -fx-border-width: 1; -fx-background-color: #2d3369;">
                      <children>
-                        <Button fx:id="newPlanetButton" mnemonicParsing="false" onAction="#handleNewPlanet" prefHeight="32.0" prefWidth="109.0" text="+ New Planet" textAlignment="CENTER">
+                        <Button fx:id="newPlanetButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleNewPlanet" prefHeight="32.0" prefWidth="115.0" style="-fx-background-color: #4b61ab; -fx-text-fill: white; -fx-font-family: consolas;" text="+ New Planet" textAlignment="CENTER">
                            <VBox.margin>
-                              <Insets top="5.0" />
+                              <Insets left="16.0" right="16.0" top="5.0" />
                            </VBox.margin>
                         </Button>
-                        <Button fx:id="newSatelliteButton" mnemonicParsing="false" onAction="#handleNewSatellite" prefHeight="32.0" prefWidth="109.0" text="+ New Satellite">
+                        <Button fx:id="newSatelliteButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleNewSatellite" prefHeight="32.0" prefWidth="115.0" style="-fx-background-color: #4b61ab; -fx-text-fill: white; -fx-font-family: consolas;" text="+ New Satellite">
                            <VBox.margin>
-                              <Insets />
+                              <Insets left="16.0" right="18.0" />
                            </VBox.margin>
                         </Button>
-                        <Button fx:id="newButton" mnemonicParsing="false" onAction="#handleLaunch" prefHeight="45.0" prefWidth="153.0" text="LAUNCH" />
-                        <Label alignment="CENTER" text="Speed of simulation">
+                        <Button fx:id="newButton" mnemonicParsing="false" onAction="#handleLaunch" prefHeight="45.0" prefWidth="153.0" style="-fx-background-color: #6f8bed; -fx-text-fill: white; -fx-font-family: consolas; -fx-font-weight: 900;" text="LAUNCH">
+                           <VBox.margin>
+                              <Insets top="20.0" />
+                           </VBox.margin>
+                        </Button>
+                        <Label alignment="CENTER" style="-fx-text-fill: white; -fx-font-family: consolas;" text="Simulation Speed">
                            <VBox.margin>
                               <Insets top="30.0" />
                            </VBox.margin>
                         </Label>
-                        <Slider fx:id="speedSlider" majorTickUnit="0.25" max="2.0" showTickLabels="true" showTickMarks="true" value="1.0" />
-                        <Button fx:id="resetSatellitesButton" mnemonicParsing="false" onAction="#handleResetSatellites" text="Reset Satellites">
+                        <Slider fx:id="speedSlider" majorTickUnit="0.25" max="2.0" showTickLabels="true" showTickMarks="true" style="-fx-control-inner-background: #94bdff; -fx-tick-mark-fill: #94bdff; -fx-tick-label-fill: white; -fx-minor-tick-count: 5;" value="1.0" />
+                        <Button fx:id="resetSatellitesButton" mnemonicParsing="false" onAction="#handleResetSatellites" prefHeight="25.0" style="-fx-background-color: #8a3b4f; -fx-text-fill: white; -fx-font-family: consolas;" text="Reset Satellites">
                            <VBox.margin>
-                              <Insets top="150.0" />
+                              <Insets left="13.0" right="13.0" top="150.0" />
                            </VBox.margin>
                         </Button>
-                        <Button fx:id="resetAllButton" mnemonicParsing="false" onAction="#handleResetAll" prefHeight="25.0" prefWidth="95.0" text="Reset All" />
-                        <Button fx:id="settingsButton" mnemonicParsing="false" onAction="#handleSettings" prefHeight="25.0" prefWidth="95.0" text="Settings">
+                        <Button fx:id="resetAllButton" mnemonicParsing="false" onAction="#handleResetAll" prefHeight="25.0" prefWidth="122.0" style="-fx-background-color: #8a3b4f; -fx-text-fill: white; -fx-font-family: consolas;" text="Reset All">
                            <VBox.margin>
-                              <Insets top="200.0" />
+                              <Insets left="13.0" right="13.0" />
+                           </VBox.margin>
+                        </Button>
+                        <Button fx:id="settingsButton" mnemonicParsing="false" onAction="#handleSettings" prefHeight="25.0" prefWidth="95.0" style="-fx-background-color: #4a4a4a; -fx-text-fill: white; -fx-font-family: consolas;" text="Settings">
+                           <VBox.margin>
+                              <Insets left="24.0" right="24.0" top="200.0" />
                            </VBox.margin>
                         </Button>
                      </children>
