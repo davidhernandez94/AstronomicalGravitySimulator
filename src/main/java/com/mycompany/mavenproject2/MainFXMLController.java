@@ -78,8 +78,9 @@ public class MainFXMLController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {    
-        satellite = addSatellite(400, 400, Color.CORAL);
         speedSlider.setDisable(true);
+        speedSlider.setMin(.5);
+        speedSlider.setMax(6);
         simulationSpeed = new Duration(50);
         transition.setOnFinished(eh -> {
             if (running) {
@@ -157,7 +158,7 @@ public class MainFXMLController implements Initializable {
         Label colorLabel = new Label("Color");
         Label xLabel = new Label("Layout x: ");
         Label yLabel = new Label("Layout y: ");
-        Slider sizeSlider = new Slider(0, 150, 10);
+        Slider sizeSlider = new Slider(8, 50, 10);
         ColorPicker colorPicker = new ColorPicker(Color.RED);
         TextField xfield = new TextField();
         TextField yfield = new TextField();
@@ -220,9 +221,8 @@ public class MainFXMLController implements Initializable {
     }
 
     public void simulationSpeedHandler() {
-        speedSlider.valueProperty().addListener(cl -> {
-            simulationSpeed = new Duration(((int) speedSlider.getValue()) * 100);
-        });
+        System.out.println("speed: " + speedSlider.getValue());
+        simulationSpeed = new Duration((int) (60 / speedSlider.getValue()));
     }
 
     public void addPlanet(double x, double y, double radius, Color color) {
@@ -231,10 +231,9 @@ public class MainFXMLController implements Initializable {
         planets.add(planet);
     }
 
-    public Satellite addSatellite(double x, double y, Color color) {
-        Satellite satellite = new Satellite(x, y, color);
+    public void addSatellite(double x, double y, Color color) {
+        satellite = new Satellite(x, y, color);
         simPane.getChildren().add(satellite.circle);
-        return satellite;
     }
     
     public void launch() {
@@ -250,7 +249,6 @@ public class MainFXMLController implements Initializable {
         */
         
         // change this after 
-        simulationSpeed = new Duration(800);
         transition.setDuration(simulationSpeed);
         
         running = true;
@@ -260,24 +258,16 @@ public class MainFXMLController implements Initializable {
             double distance = Math.sqrt(Math.pow(planet.x - satellite.posX, 2) + Math.pow(planet.y - satellite.posY, 2));
             forceX += (planet.mass * satellite.mass / (distance + 30))
                     * (planet.x > satellite.posX ? 1 : -1);
-            System.out.println("planet: mass" + planet.mass + " x" + planet.x + " y" + planet.y);
-            System.out.println("satellite: mass" + satellite.mass + " x" + satellite.posX + " y" + satellite.posY);
-            System.out.println("distanceX: " + (planet.x - satellite.posX));
-            System.out.println("distanceY: " + (planet.y - satellite.posY));
             forceY += (planet.mass * satellite.mass / (distance + 30))
                     * (planet.y > satellite.posY ? 1 : -1);
         }
-        System.out.println("force x: " + forceX + " force y: " + forceY);
-        satellite.accX = forceX / 100000; // arbitrary value
-        satellite.accY = forceY / 100000;
+        satellite.accX = forceX / 10000; 
+        satellite.accY = forceY / 10000;
         satellite.changeVelocity();
         satellite.changePosition();
-        System.out.println("satellite posx" + satellite.posX + " posy" + satellite.posY + " velx" + satellite.velX + " vely" + satellite.velY);
         transition.setNode(satellite.circle);
         transition.setByX(satellite.velX);
         transition.setByY(satellite.velY); 
-        System.out.println(transition.getDuration().toSeconds() + " trans: " + transition.getByX() + " " + transition.getByY());
-        System.out.println("end");
         transition.play();
     }
 }

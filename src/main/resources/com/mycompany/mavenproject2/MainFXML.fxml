@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.mavenproject2.MainFXMLController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.mavenproject2.MainFXMLController">
    <top>
       <HBox maxHeight="-Infinity" prefHeight="30.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
@@ -44,7 +44,7 @@
                               <Insets top="30.0" />
                            </VBox.margin>
                         </Label>
-                        <Slider fx:id="speedSlider" majorTickUnit="0.25" max="2.0" showTickLabels="true" showTickMarks="true" value="1.0" />
+                        <Slider fx:id="speedSlider" majorTickUnit="0.25" max="2.0" onMouseClicked="#simulationSpeedHandler" onMouseDragged="#simulationSpeedHandler" onMouseEntered="#simulationSpeedHandler" onMouseExited="#simulationSpeedHandler" showTickLabels="true" showTickMarks="true" value="1.0" />
                         <Button fx:id="resetSatellitesButton" mnemonicParsing="false" onAction="#handleResetSatellites" text="Reset Satellites">
                            <VBox.margin>
                               <Insets top="150.0" />

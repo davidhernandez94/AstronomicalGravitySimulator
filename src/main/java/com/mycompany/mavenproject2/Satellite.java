@@ -21,7 +21,7 @@ public class Satellite {
     protected Circle circle;
     protected final double mass = Math.pow(RADIUS, 3);
     
-    protected final static double RADIUS = 15;
+    protected final static double RADIUS = 4;
     
     public Satellite(double x, double y, Color colour) {
         this.posX = x;
