@@ -17,6 +17,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
@@ -267,6 +268,15 @@ public class MainFXMLController implements Initializable {
     }
 
     public void addPlanet(double x, double y, double radius, Color color) {
+        if (isOverlapping(x, y, radius)) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Invalid Position");
+        alert.setHeaderText("Planet Overlap");
+        alert.setContentText("The new planet overlaps with another planet or the satellite. Choose a different location.");
+        alert.show();
+        return;
+    }
+        
         Planet planet = new Planet(x, y, radius, color);
         simPane.getChildren().add(planet.circle);
         planets.add(planet);
@@ -325,5 +335,23 @@ public class MainFXMLController implements Initializable {
         transition.setByX(satellite.velX);
         transition.setByY(satellite.velY);
         transition.play();
+    }
+
+    private boolean isOverlapping(double x, double y, double radius) {
+        for (Planet p : planets) {
+            double dist = Math.hypot(p.x - x, p.y - y);
+            if (dist < p.radius + radius) {
+                return true;
+            }
+        }
+
+        if (satellite != null) {
+            double dist = Math.hypot(satellite.posX - x, satellite.posY - y);
+            if (dist < satellite.circle.getRadius() + radius) {
+                return true;
+            }
+        }
+
+        return false; 
     }
 }
