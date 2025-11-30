@@ -12,6 +12,8 @@ import javafx.scene.shape.Circle;
  * @author 6309110
  */
 public class Satellite {
+    protected double initialX;
+    protected double initialY;
     protected double posX;
     protected double posY;
     protected double velX;
@@ -24,6 +26,8 @@ public class Satellite {
     protected final static double RADIUS = 4;
     
     public Satellite(double x, double y, Color colour) {
+        this.initialX = x;
+        this.initialY = y;
         this.posX = x;
         this.posY = y;
         this.velX = 0;
@@ -52,6 +56,14 @@ public class Satellite {
         posY += velY;
     }
 
+    public double getInitialX() {
+        return initialX;
+    }
+
+    public double getInitialY() {
+        return initialY;
+    }
+    
     public double getPosX() {
         return posX;
     }
@@ -99,7 +111,4 @@ public class Satellite {
     public void setAccY(double accY) {
         this.accY = accY;
     }
-    
-    
-    
 }

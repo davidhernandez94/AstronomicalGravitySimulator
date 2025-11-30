@@ -23,13 +23,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -44,10 +41,9 @@ public class MainFXMLController implements Initializable {
     private TranslateTransition transition = new TranslateTransition();
     private boolean running = false;
     private ArrayList<Planet> planets = new ArrayList<>();
-    
+
     // should be removed after, see IMPORTANT comment way below
     private Satellite satellite;
-
 
     @FXML
     private Button collapseButton;
@@ -60,33 +56,36 @@ public class MainFXMLController implements Initializable {
     @FXML
     private Button newSatelliteButton;
     @FXML
-    private Button newButton;
-    @FXML
     private Slider speedSlider;
-    @FXML
-    private Button resetSatellitesButton;
     @FXML
     private Button resetAllButton;
     @FXML
     private Button settingsButton;
     @FXML
     private StackPane simPane;
-    
+    @FXML
+    private Button lauchButton;
+    @FXML
+    private Button resetSatelliteButton;
 
     /**
      * Initializes the controller class.
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {    
+    public void initialize(URL url, ResourceBundle rb) {
+        lauchButton.setDisable(true);
         speedSlider.setDisable(true);
         speedSlider.setMin(.5);
         speedSlider.setMax(6);
+        resetAllButton.setDisable(true);
         simulationSpeed = new Duration(50);
         transition.setOnFinished(eh -> {
             if (running) {
                 launch();
             }
         });
+
+        handleResetAll();
     }
 
     @FXML
@@ -111,11 +110,48 @@ public class MainFXMLController implements Initializable {
     }
 
     @FXML
-    private void handleResetSatellites(ActionEvent event) {
+    private void handleResetSatellite(ActionEvent event) {
+        if (satellite == null) {
+            return;
+        }
+
+        transition.stop();
+        running = false;
+
+        satellite.velX = 0;
+        satellite.velY = 0;
+        satellite.accX = 0;
+        satellite.accY = 0;
+
+        satellite.posX = satellite.initialX;
+        satellite.posY = satellite.initialY;
+
+        satellite.circle.setTranslateX(satellite.initialX);
+        satellite.circle.setTranslateY(satellite.initialY);
+
+        lauchButton.setDisable(false);
     }
 
     @FXML
-    private void handleResetAll(ActionEvent event) {
+    private void handleResetAll() {
+        if (satellite != null) {
+            if (satellite.circle != null) {
+                simPane.getChildren().remove(satellite.circle);
+            }
+            satellite = null;
+            newSatelliteButton.setDisable(false);
+            lauchButton.setDisable(true);
+            running = false;
+        }
+
+        if (!planets.isEmpty()) {
+            for (Planet planet : planets) {
+                if (planet != null && planet.circle != null) {
+                    simPane.getChildren().remove(planet.circle);
+                }
+            }
+            planets.clear();
+        }
     }
 
     @FXML
@@ -162,10 +198,11 @@ public class MainFXMLController implements Initializable {
         ColorPicker colorPicker = new ColorPicker(Color.RED);
         TextField xfield = new TextField();
         TextField yfield = new TextField();
-        
+
         sizeSlider.setMajorTickUnit(10);
         sizeSlider.setShowTickMarks(true);
-        
+        sizeSlider.setShowTickLabels(true);
+
         if (name.equals("Satellite")) {
             sizeSlider.setDisable(true);
         }
@@ -184,6 +221,7 @@ public class MainFXMLController implements Initializable {
         layout.setAlignment(Pos.CENTER);
 
         Scene secondaryScene = new Scene(layout, 500, 300);
+        secondaryStage.setResizable(false);
         secondaryStage.setScene(secondaryScene);
         secondaryStage.show();
 
@@ -209,17 +247,20 @@ public class MainFXMLController implements Initializable {
             double yProperty = Double.parseDouble(yfield.getText());
 
             Color color = colorPicker.getValue();
-            
+
             secondaryStage.close();
 
             if (name.equals("Planet")) {
                 addPlanet(xProperty, yProperty, radius[0], color);
             } else {
                 addSatellite(xProperty, yProperty, color);
+                newSatelliteButton.setDisable(true);
+                lauchButton.setDisable(false);
             }
         });
     }
 
+    @FXML
     public void simulationSpeedHandler() {
         System.out.println("speed: " + speedSlider.getValue());
         simulationSpeed = new Duration((int) (60 / speedSlider.getValue()));
@@ -229,16 +270,22 @@ public class MainFXMLController implements Initializable {
         Planet planet = new Planet(x, y, radius, color);
         simPane.getChildren().add(planet.circle);
         planets.add(planet);
+
+        resetAllButton.setDisable(false);
     }
 
     public void addSatellite(double x, double y, Color color) {
         satellite = new Satellite(x, y, color);
         simPane.getChildren().add(satellite.circle);
+
+        resetAllButton.setDisable(false);
+        newSatelliteButton.setDisable(true);
+        lauchButton.setDisable(false);
     }
-    
+
     public void launch() {
         // main simulation is here
-        
+
         /*
         TODO: IMPORTANT (written by David)
         I think we should have only one satellite going at once because
@@ -246,11 +293,10 @@ public class MainFXMLController implements Initializable {
         I put this line (right below) to make it easier but we have to
         change the UI so that only one satellite can go at once
         Let me know if that's ok by text or whatever
-        */
-        
+         */
         // change this after 
         transition.setDuration(simulationSpeed);
-        
+
         running = true;
         double forceX = 0;
         double forceY = 0;
@@ -260,14 +306,24 @@ public class MainFXMLController implements Initializable {
                     * (planet.x > satellite.posX ? 1 : -1);
             forceY += (planet.mass * satellite.mass / (distance + 30))
                     * (planet.y > satellite.posY ? 1 : -1);
+
+            if (satellite != null && satellite.circle.getBoundsInParent().intersects(planet.circle.getBoundsInParent())) {
+                simPane.getChildren().remove(satellite.circle);
+                newSatelliteButton.setDisable(false);
+                lauchButton.setDisable(true);
+                running = false;
+                resetAllButton.setDisable(planets.isEmpty());
+                break;
+            }
         }
-        satellite.accX = forceX / 10000; 
+
+        satellite.accX = forceX / 10000;
         satellite.accY = forceY / 10000;
         satellite.changeVelocity();
         satellite.changePosition();
         transition.setNode(satellite.circle);
         transition.setByX(satellite.velX);
-        transition.setByY(satellite.velY); 
+        transition.setByY(satellite.velY);
         transition.play();
     }
 }
