@@ -38,14 +38,14 @@
                               <Insets />
                            </VBox.margin>
                         </Button>
-                        <Button fx:id="newButton" mnemonicParsing="false" onAction="#handleLaunch" prefHeight="45.0" prefWidth="153.0" text="LAUNCH" />
+                        <Button fx:id="lauchButton" mnemonicParsing="false" onAction="#handleLaunch" prefHeight="45.0" prefWidth="153.0" text="LAUNCH" />
                         <Label alignment="CENTER" text="Speed of simulation">
                            <VBox.margin>
                               <Insets top="30.0" />
                            </VBox.margin>
                         </Label>
                         <Slider fx:id="speedSlider" majorTickUnit="0.25" max="2.0" onMouseClicked="#simulationSpeedHandler" onMouseDragged="#simulationSpeedHandler" onMouseEntered="#simulationSpeedHandler" onMouseExited="#simulationSpeedHandler" showTickLabels="true" showTickMarks="true" value="1.0" />
-                        <Button fx:id="resetSatellitesButton" mnemonicParsing="false" onAction="#handleResetSatellites" text="Reset Satellites">
+                        <Button fx:id="resetSatelliteButton" mnemonicParsing="false" onAction="#handleResetSatellite" text="Reset Satellite">
                            <VBox.margin>
                               <Insets top="150.0" />
                            </VBox.margin>
@@ -61,7 +61,14 @@
                         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
                      </padding>
                   </VBox>
-                  <StackPane fx:id="simPane" alignment="TOP_LEFT" prefHeight="770.0" prefWidth="820.0" />
+                  <StackPane fx:id="simPane" alignment="TOP_LEFT" prefHeight="770.0" prefWidth="820.0">
+                     <children>
+                        <Label fx:id="crashLabel" style="-fx-background-color: #ffff80; -fx-font-size: 22;" text="CRASH!!" StackPane.alignment="BOTTOM_LEFT">
+                           <StackPane.margin>
+                              <Insets bottom="50.0" left="50.0" />
+                           </StackPane.margin>
+                        </Label>
+                     </children></StackPane>
                </children>
             </HBox>
          </children>

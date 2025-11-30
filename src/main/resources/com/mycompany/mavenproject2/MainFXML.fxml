@@ -61,7 +61,14 @@
                         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
                      </padding>
                   </VBox>
-                  <StackPane fx:id="simPane" alignment="TOP_LEFT" prefHeight="770.0" prefWidth="820.0" />
+                  <StackPane fx:id="simPane" alignment="TOP_LEFT" prefHeight="770.0" prefWidth="820.0">
+                     <children>
+                        <Label fx:id="crashLabel" style="-fx-background-color: #ffff80; -fx-font-size: 22;" text="CRASH!!" StackPane.alignment="BOTTOM_LEFT">
+                           <StackPane.margin>
+                              <Insets bottom="50.0" left="50.0" />
+                           </StackPane.margin>
+                        </Label>
+                     </children></StackPane>
                </children>
             </HBox>
          </children>

@@ -7,6 +7,7 @@ package com.mycompany.mavenproject2;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -42,6 +43,7 @@ public class MainFXMLController implements Initializable {
     private TranslateTransition transition = new TranslateTransition();
     private boolean running = false;
     private ArrayList<Planet> planets = new ArrayList<>();
+    private PauseTransition pauseTrans = new PauseTransition(new Duration(1000));
 
     // should be removed after, see IMPORTANT comment way below
     private Satellite satellite;
@@ -68,18 +70,22 @@ public class MainFXMLController implements Initializable {
     private Button lauchButton;
     @FXML
     private Button resetSatelliteButton;
+    @FXML
+    private Label crashLabel;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        crashLabel.setVisible(false);
         lauchButton.setDisable(true);
         speedSlider.setDisable(true);
         speedSlider.setMin(.5);
         speedSlider.setMax(6);
         resetAllButton.setDisable(true);
         simulationSpeed = new Duration(50);
+        pauseTrans.setOnFinished(eh -> crashLabel.setVisible(false));
         transition.setOnFinished(eh -> {
             if (running) {
                 launch();
@@ -296,39 +302,32 @@ public class MainFXMLController implements Initializable {
     public void launch() {
         // main simulation is here
 
-        /*
-        TODO: IMPORTANT (written by David)
-        I think we should have only one satellite going at once because
-        otherwise there's too many animation going and it gets complicated.
-        I put this line (right below) to make it easier but we have to
-        change the UI so that only one satellite can go at once
-        Let me know if that's ok by text or whatever
-         */
-        // change this after 
-        transition.setDuration(simulationSpeed);
+        transition.setDuration(simulationSpeed.divide(20));
 
         running = true;
         double forceX = 0;
         double forceY = 0;
         for (Planet planet : planets) {
             double distance = Math.sqrt(Math.pow(planet.x - satellite.posX, 2) + Math.pow(planet.y - satellite.posY, 2));
-            forceX += (planet.mass * satellite.mass / (distance + 30))
+            forceX += (planet.mass * satellite.mass * Math.abs(planet.x - satellite.posX)/ (distance + 30))
                     * (planet.x > satellite.posX ? 1 : -1);
-            forceY += (planet.mass * satellite.mass / (distance + 30))
+            forceY += (planet.mass * satellite.mass * Math.abs(planet.y - satellite.posY)/ (distance + 30))
                     * (planet.y > satellite.posY ? 1 : -1);
 
             if (satellite != null && satellite.circle.getBoundsInParent().intersects(planet.circle.getBoundsInParent())) {
-                simPane.getChildren().remove(satellite.circle);
                 newSatelliteButton.setDisable(false);
                 lauchButton.setDisable(true);
                 running = false;
                 resetAllButton.setDisable(planets.isEmpty());
+                simPane.getChildren().remove(satellite.circle);
+                crashLabel.setVisible(true);
+                pauseTrans.play();
                 break;
             }
         }
-
-        satellite.accX = forceX / 10000;
-        satellite.accY = forceY / 10000;
+        satellite.circle.toFront();
+        satellite.accX = forceX / 8_000_000;
+        satellite.accY = forceY / 8_000_000;
         satellite.changeVelocity();
         satellite.changePosition();
         transition.setNode(satellite.circle);
