@@ -143,6 +143,8 @@ public class MainFXMLController implements Initializable {
         if (satellite == null) {
             return;
         }
+        
+        satellite.circle.setVisible(true);
 
         // stop animation
         transition.stop();
@@ -189,7 +191,7 @@ public class MainFXMLController implements Initializable {
             }
             
             planets.clear();
-        }
+        }        
     }
 
     /**
@@ -376,6 +378,7 @@ public class MainFXMLController implements Initializable {
         
         // add new satellite to simPane
         satellite = new Satellite(x, y, color);
+        satellite.circle.setVisible(true);
         simPane.getChildren().add(satellite.circle);
 
         // change accessibility of certain buttons 
@@ -440,7 +443,13 @@ public class MainFXMLController implements Initializable {
             }
         }
         
-        // update satellite's fields and update transition's fields
+        if (satellite.posX < 0 || satellite.posY < 0) {
+            satellite.circle.setVisible(false);
+        } else {
+            satellite.circle.setVisible(true);
+        }
+        
+        // update satellite's and transition's fields
         satellite.circle.toFront();
         satellite.accX = forceX / 800;
         satellite.accY = forceY / 800;
@@ -449,6 +458,8 @@ public class MainFXMLController implements Initializable {
         transition.setNode(satellite.circle);
         transition.setByX(satellite.velX);
         transition.setByY(satellite.velY);
+        
+        // play transition
         transition.play();
     }
 
