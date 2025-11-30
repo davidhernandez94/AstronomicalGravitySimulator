@@ -297,19 +297,29 @@ public class MainFXMLController implements Initializable {
      */
     @FXML
     public void simulationSpeedHandler() {
-        simulationSpeed = new Duration((int) (100 / speedSlider.getValue()));
+        // here, the value 150 is what seems most ergonomic, not an exact constant
+        simulationSpeed = new Duration((int) (150 / speedSlider.getValue()));
     }
 
+    /**
+     * add new planet to simPane
+     * @param x x-position (0 = left edge)
+     * @param y y-position (0 = top edge)
+     * @param radius radius of the planet
+     * @param color colour of the planet
+     */
     public void addPlanet(double x, double y, double radius, Color color) {
+        // alerts user if planet overlaps with another
         if (isOverlapping(x, y, radius)) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Invalid Position");
-        alert.setHeaderText("Planet Overlap");
-        alert.setContentText("The new planet overlaps with another planet or the satellite. Choose a different location.");
-        alert.show();
-        return;
-    }
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Invalid Position");
+            alert.setHeaderText("Planet Overlap");
+            alert.setContentText("The new planet overlaps with another planet or the satellite. Choose a different location.");
+            alert.show();
+            return;
+        }
         
+        // make new planet and add it to simPane
         Planet planet = new Planet(x, y, radius, color);
         simPane.getChildren().add(planet.circle);
         planets.add(planet);
@@ -317,28 +327,65 @@ public class MainFXMLController implements Initializable {
         resetAllButton.setDisable(false);
     }
 
+    /**
+     * add new satellite to simPane
+     * @param x x-position (0 = left edge)
+     * @param y y-position (0 = top edge)
+     * @param color colour of satellite
+     */
     public void addSatellite(double x, double y, Color color) {
+        // alerts user if satellite overlaps with planet
+        if (isOverlapping(x, y, Satellite.RADIUS)) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Invalid Position");
+            alert.setHeaderText("Satellite Overlap");
+            alert.setContentText("The new satellite overlaps with a planet. Choose a different location.");
+            alert.show();
+            return;
+        }
+        
+        // add new satellite to simPane
         satellite = new Satellite(x, y, color);
         simPane.getChildren().add(satellite.circle);
 
+        // change accessibility of certain buttons 
         resetAllButton.setDisable(false);
         newSatelliteButton.setDisable(true);
         lauchButton.setDisable(false);
     }
 
+    /**
+     * animation for the satellite, run many times per second
+     */
     public void launch() {
         // main simulation is here
-
-        transition.setDuration(simulationSpeed);
-
         running = true;
+
+        // set length of animation 
+        transition.setDuration(simulationSpeed);
+        
+        // force is set to 0
+        // the gravitational pull of the planets will change it
         double forceX = 0;
         double forceY = 0;
+        
+        // iterate through each planet in planets list
+        // for each, add its gravitational force to forceX and forceY
         for (Planet planet : planets) {
-            double distance = Math.sqrt(Math.pow(planet.x - satellite.posX, 2) + Math.pow(planet.y - satellite.posY, 2));
-            forceX += (planet.mass * satellite.mass * Math.abs(planet.x - satellite.posX)/ (distance + 30))
+            // distance between satellite and planet using a^2 + b^2 = c^2
+            double distance = Math.hypot(planet.x - satellite.posX, planet.y - satellite.posY);
+            
+            /*
+            add gravitational force to the forces using the formula 
+            F = (constant) * (mass1 * mass2 / distance^2)
+            where the constant is not the constant G, because units of 
+            mass and distance are different here than in real physics application.
+            the constant is put further down when the forces are divided by
+            a constant to give the satellite's acceleration
+            */
+            forceX += (planet.mass * satellite.mass * Math.abs(planet.x - satellite.posX) / Math.pow(distance, 2))
                     * (planet.x > satellite.posX ? 1 : -1);
-            forceY += (planet.mass * satellite.mass * Math.abs(planet.y - satellite.posY)/ (distance + 30))
+            forceY += (planet.mass * satellite.mass * Math.abs(planet.y - satellite.posY) / Math.pow(distance, 2))
                     * (planet.y > satellite.posY ? 1 : -1);
 
             if (satellite != null && satellite.circle.getBoundsInParent().intersects(planet.circle.getBoundsInParent())) {
@@ -353,8 +400,8 @@ public class MainFXMLController implements Initializable {
             }
         }
         satellite.circle.toFront();
-        satellite.accX = forceX / 80_000;
-        satellite.accY = forceY / 80_000;
+        satellite.accX = forceX / 80_0;
+        satellite.accY = forceY / 80_0;
         satellite.changeVelocity();
         satellite.changePosition();
         transition.setNode(satellite.circle);
