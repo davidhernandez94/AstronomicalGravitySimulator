@@ -44,18 +44,13 @@
                               <Insets top="30.0" />
                            </VBox.margin>
                         </Label>
-                        <Slider fx:id="speedSlider" majorTickUnit="0.25" max="2.0" onMouseClicked="#simulationSpeedHandler" onMouseDragged="#simulationSpeedHandler" onMouseEntered="#simulationSpeedHandler" onMouseExited="#simulationSpeedHandler" showTickLabels="true" showTickMarks="true" value="1.0" />
+                        <Slider fx:id="speedSlider" majorTickUnit="0.25" max="10.0" min="1.0" onMouseClicked="#simulationSpeedHandler" onMouseDragged="#simulationSpeedHandler" onMouseEntered="#simulationSpeedHandler" onMouseExited="#simulationSpeedHandler" showTickLabels="true" showTickMarks="true" value="5.0" />
                         <Button fx:id="resetSatelliteButton" mnemonicParsing="false" onAction="#handleResetSatellite" text="Reset Satellite">
                            <VBox.margin>
                               <Insets top="150.0" />
                            </VBox.margin>
                         </Button>
                         <Button fx:id="resetAllButton" mnemonicParsing="false" onAction="#handleResetAll" prefHeight="25.0" prefWidth="95.0" text="Reset All" />
-                        <Button fx:id="settingsButton" mnemonicParsing="false" onAction="#handleSettings" prefHeight="25.0" prefWidth="95.0" text="Settings">
-                           <VBox.margin>
-                              <Insets top="200.0" />
-                           </VBox.margin>
-                        </Button>
                      </children>
                      <padding>
                         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
