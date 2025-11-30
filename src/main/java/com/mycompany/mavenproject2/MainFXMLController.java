@@ -49,8 +49,6 @@ public class MainFXMLController implements Initializable {
     @FXML
     private VBox sidebar;
     @FXML
-    private Button boton;
-    @FXML
     private Button newPlanetButton;
     @FXML
     private Button newSatelliteButton;
@@ -61,11 +59,19 @@ public class MainFXMLController implements Initializable {
     @FXML
     private StackPane simPane;
     @FXML
-    private Button lauchButton;
+    private Button launchButton;
     @FXML
     private Button resetSatelliteButton;
     @FXML
     private Label crashLabel;
+    @FXML
+    private Label timeLabel;
+    @FXML
+    private Button stopPlayButton;
+    @FXML
+    private Label velocityLabel;
+    @FXML
+    private Label accelerationLabel;
 
     /**
      * Initializes the controller class.
@@ -74,9 +80,11 @@ public class MainFXMLController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         crashLabel.setVisible(false);
-        lauchButton.setDisable(true);
+        launchButton.setDisable(true);
         speedSlider.setDisable(true);
         resetAllButton.setDisable(true);
+        stopPlayButton.setDisable(true);
+
         
         // hides crash label once 1 second is over
         pauseTrans.setOnFinished(eh -> crashLabel.setVisible(false)); 
@@ -85,7 +93,7 @@ public class MainFXMLController implements Initializable {
         // and there's smooth motion
         transition.setOnFinished(eh -> {
             if (running) {
-                launch();
+                updateSimulation();
             }
         });
 
@@ -99,12 +107,10 @@ public class MainFXMLController implements Initializable {
     @FXML
     private void collapseHandle(ActionEvent event) {
         // moves sidebar outside/inside of scene by translation
-        if (collapseButton.getText().equals(">")) {
-            collapseButton.setText("<");
+        if (sidebar.getTranslateX() == -180) {
             sidebar.setTranslateX(0);
             
         } else {
-            collapseButton.setText(">");
             sidebar.setTranslateX(-180);
         }
     }
@@ -115,7 +121,7 @@ public class MainFXMLController implements Initializable {
      */
     @FXML
     private void handleNewPlanet(ActionEvent event) {
-        secondWindow("Planet");
+        newObjectWindow("Planet");
     }
 
     /**
@@ -124,7 +130,7 @@ public class MainFXMLController implements Initializable {
      */
     @FXML
     private void handleNewSatellite(ActionEvent event) {
-        secondWindow("Satellite");
+        newObjectWindow("Satellite");
     }
 
     /**
@@ -154,7 +160,7 @@ public class MainFXMLController implements Initializable {
         satellite.circle.setTranslateX(satellite.initialX);
         satellite.circle.setTranslateY(satellite.initialY);
 
-        lauchButton.setDisable(false);
+        launchButton.setDisable(false);
     }
 
     /**
@@ -170,7 +176,7 @@ public class MainFXMLController implements Initializable {
             
             satellite = null;
             newSatelliteButton.setDisable(false);
-            lauchButton.setDisable(true);
+            launchButton.setDisable(true);
             running = false;
         }
 
@@ -187,32 +193,56 @@ public class MainFXMLController implements Initializable {
     }
 
     /**
-     * when launch button is clicked, call animation 
+     * when updateSimulation button is clicked, call animation 
      * @param event triggered action event
      */
     @FXML
     private void handleLaunch(ActionEvent event) {
         speedSlider.setDisable(false);
         simulationSpeedHandler();
-        launch();
+        running = true;
+        updateSimulation();
+        stopPlayButton.setDisable(false);
+        launchButton.setDisable(true);
     }
 
+    @FXML
+    private void handleStopPlay(ActionEvent event) {
+        if (running) {
+            running = false;
+            transition.stop();
+            stopPlayButton.setStyle("-fx-background-color: #216e5a;"
+                    + "-fx-font-family: consolas;"
+                    + "-fx-text-fill: white;"
+                    + "-fx-font-weight: 900;");
+            stopPlayButton.setText("Play");
+        } else {
+            running = true;
+            updateSimulation();
+            stopPlayButton.setStyle("-fx-background-color: #b54e64;"
+                    + "-fx-font-family: consolas;"
+                    + "-fx-text-fill: white;"
+                    + "-fx-font-weight: 900;");
+            stopPlayButton.setText("Stop");
+        }
+    }
+    
     /**
      * second window: outside of first window, so MainFXML does not apply here.
      * lets user create a new planet or satellite
      * choices: colour, x-position, y-position, and size (only for planets)
      * @param name either "Satellite" or "Planet"
      */
-    public void secondWindow(String name) {
+    public void newObjectWindow(String name) {
         // initialize new window
-        Stage secondaryStage = new Stage();
-        secondaryStage.setTitle("New " + name);
+        Stage newObjectStage = new Stage();
+        newObjectStage.setTitle("New " + name);
 
         // manually creating labels and nodes to put in scene
         Label sizeLabel = new Label("Size");
         Label colorLabel = new Label("Color");
-        Label xLabel = new Label("Layout x: ");
-        Label yLabel = new Label("Layout y: ");
+        Label xLabel = new Label("x position: ");
+        Label yLabel = new Label("y position: ");
         Slider sizeSlider = new Slider(8, 50, 10);
         ColorPicker colorPicker = new ColorPicker(Color.RED);
         TextField xfield = new TextField();
@@ -246,9 +276,9 @@ public class MainFXMLController implements Initializable {
 
         // initialize scene 
         Scene secondaryScene = new Scene(layout, 500, 300);
-        secondaryStage.setResizable(false);
-        secondaryStage.setScene(secondaryScene);
-        secondaryStage.show();
+        newObjectStage.setResizable(false);
+        newObjectStage.setScene(secondaryScene);
+        newObjectStage.show();
 
         // handler that checks to see if values are integers
         // note: planets can be placed outside of scene
@@ -275,19 +305,19 @@ public class MainFXMLController implements Initializable {
 
         // when done, make new planet/satellite and add to simPane
         doneButton.setOnAction(e -> {
-            double xProperty = Double.parseDouble(xfield.getText());
-            double yProperty = Double.parseDouble(yfield.getText());
+            double xProperty = xfield.getText().isEmpty() ? 0.0 : Double.parseDouble(xfield.getText());
+            double yProperty = yfield.getText().isEmpty() ? 0.0 : Double.parseDouble(yfield.getText());
 
             Color color = colorPicker.getValue();
 
-            secondaryStage.close();
+            newObjectStage.close();
 
             if (name.equals("Planet")) {
                 addPlanet(xProperty, yProperty, radius[0], color);
             } else {
                 addSatellite(xProperty, yProperty, color);
                 newSatelliteButton.setDisable(true);
-                lauchButton.setDisable(false);
+                launchButton.setDisable(false);
             }
         });
     }
@@ -351,13 +381,13 @@ public class MainFXMLController implements Initializable {
         // change accessibility of certain buttons 
         resetAllButton.setDisable(false);
         newSatelliteButton.setDisable(true);
-        lauchButton.setDisable(false);
+        launchButton.setDisable(false);
     }
 
     /**
      * animation for the satellite, run many times per second
      */
-    public void launch() {
+    public void updateSimulation() {
         // main simulation is here
         running = true;
 
@@ -376,21 +406,31 @@ public class MainFXMLController implements Initializable {
             double distance = Math.hypot(planet.x - satellite.posX, planet.y - satellite.posY);
             
             /*
-            add gravitational force to the forces using the formula 
+            this is the main formula that is being shown in this project
+            
+            add the planet's gravitational pull to the forces using the formula 
             F = (constant) * (mass1 * mass2 / distance^2)
             where the constant is not the constant G, because units of 
             mass and distance are different here than in real physics application.
-            the constant is put further down when the forces are divided by
-            a constant to give the satellite's acceleration
+            the constant is put further down in the code when the forces are 
+            divided by a constant to give the satellite's acceleration
+            
+            the forces are multiplied by the distance to maintain the ratio
+            between x and y accurate
+            
+            they are also multiplied by either 1 or -1 depending on the 
+            direction that the planet is pulling on
             */
             forceX += (planet.mass * satellite.mass * Math.abs(planet.x - satellite.posX) / Math.pow(distance, 2))
                     * (planet.x > satellite.posX ? 1 : -1);
             forceY += (planet.mass * satellite.mass * Math.abs(planet.y - satellite.posY) / Math.pow(distance, 2))
                     * (planet.y > satellite.posY ? 1 : -1);
 
+            // if satellite intersects with a planet, crash and show crash label
             if (satellite != null && satellite.circle.getBoundsInParent().intersects(planet.circle.getBoundsInParent())) {
+                // make satellite disappear, stop simulation
                 newSatelliteButton.setDisable(false);
-                lauchButton.setDisable(true);
+                launchButton.setDisable(true);
                 running = false;
                 resetAllButton.setDisable(planets.isEmpty());
                 simPane.getChildren().remove(satellite.circle);
@@ -399,9 +439,11 @@ public class MainFXMLController implements Initializable {
                 break;
             }
         }
+        
+        // update satellite's fields and update transition's fields
         satellite.circle.toFront();
-        satellite.accX = forceX / 80_0;
-        satellite.accY = forceY / 80_0;
+        satellite.accX = forceX / 800;
+        satellite.accY = forceY / 800;
         satellite.changeVelocity();
         satellite.changePosition();
         transition.setNode(satellite.circle);
@@ -410,6 +452,13 @@ public class MainFXMLController implements Initializable {
         transition.play();
     }
 
+    /**
+     * checks to see if a new planet overlaps with another planet or satellite
+     * @param x x position of new planet
+     * @param y y position of new planet
+     * @param radius radius of new planet
+     * @return true if the planet overlaps
+     */
     private boolean isOverlapping(double x, double y, double radius) {
         for (Planet p : planets) {
             double dist = Math.hypot(p.x - x, p.y - y);

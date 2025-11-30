@@ -9,15 +9,15 @@ import javafx.scene.shape.Circle;
 
 /**
  *
- * @author David Hernandez
+ * @author David Hernandez, James Ha, Astghik Minasyan
  */
 public class Planet {
-    protected double x;
-    protected double y;
-    protected double radius;
-    protected Color colour;
-    protected Circle circle;
-    protected double mass;
+    protected double x; // x position
+    protected double y; // y position
+    protected double radius; // radius of circle
+    protected Color colour; // colour of circle
+    protected Circle circle; // circle that's shown on scene
+    protected double mass; // mass of planet
     
 
     public Planet(double x, double y, double radius, Color colour) {

@@ -18,6 +18,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("MainFXML"), 1000, 800);
+        stage.setTitle("Astronomical Gravity Simulator");
         stage.setScene(scene);
         stage.show();
     }
