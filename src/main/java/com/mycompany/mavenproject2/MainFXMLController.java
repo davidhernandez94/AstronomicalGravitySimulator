@@ -36,11 +36,11 @@ public class MainFXMLController implements Initializable {
     private Duration simulationSpeed; // duration of each individual transition of satellite
     private TranslateTransition transition = new TranslateTransition(); // linear transition of satellite 
     private boolean running = false; // true when animation is running
-    private ArrayList<Planet> planets = new ArrayList<>(); // list of planets currently in animation
     private PauseTransition pauseTrans = new PauseTransition(new Duration(1000)); // 1-second transition to show crash label
-    private Satellite satellite; // satellite of animation
     private long startTime = 0; // start time of simulation
     private long elapsedTime = 0; // total elapsed time in milliseconds
+    ArrayList<Planet> planets = new ArrayList<>(); // list of planets currently in animation
+    Satellite satellite; // satellite of animation
 
     @FXML
     private Button collapseButton;
@@ -59,8 +59,6 @@ public class MainFXMLController implements Initializable {
     @FXML
     private Button launchButton;
     @FXML
-    private Button resetSatelliteButton;
-    @FXML
     private Label crashLabel;
     @FXML
     private Label timeLabel;
@@ -70,6 +68,10 @@ public class MainFXMLController implements Initializable {
     private Label velocityLabel;
     @FXML
     private Label accelerationLabel;
+    @FXML
+    private StackPane mainPane;
+    @FXML
+    private Button resetSatellitesButton;
 
     /**
      * Initializes the controller class. Setting up default configurations
@@ -565,7 +567,7 @@ public class MainFXMLController implements Initializable {
      * @param radius radius of new planet
      * @return true if the planet overlaps
      */
-    private boolean isOverlapping(double x, double y, double radius) {
+    public boolean isOverlapping(double x, double y, double radius) {
         for (Planet p : planets) {
             double dist = Math.hypot(p.x - x, p.y - y);
             if (dist < p.radius + radius) {
