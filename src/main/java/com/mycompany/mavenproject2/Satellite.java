@@ -5,7 +5,7 @@ import javafx.scene.shape.Circle;
 
 /**
  *
- * @author 
+ * @author David Hernandez, James Ha, Astghik Minasyan
  */
 public class Satellite {
     protected double initialX;

@@ -35,10 +35,12 @@ public class MainFXMLController implements Initializable {
 
     private Duration simulationSpeed; // duration of each individual transition of satellite
     private TranslateTransition transition = new TranslateTransition(); // linear transition of satellite 
-    private boolean running = false; // true when animaiton is running
+    private boolean running = false; // true when animation is running
     private ArrayList<Planet> planets = new ArrayList<>(); // list of planets currently in animation
     private PauseTransition pauseTrans = new PauseTransition(new Duration(1000)); // 1-second transition to show crash label
     private Satellite satellite; // satellite of animation
+    private long startTime = 0; // start time of simulation
+    private long elapsedTime = 0; // total elapsed time in milliseconds
 
     @FXML
     private Button collapseButton;
@@ -70,8 +72,7 @@ public class MainFXMLController implements Initializable {
     private Label accelerationLabel;
 
     /**
-     * Initializes the controller class.
-     * Setting up default configurations
+     * Initializes the controller class. Setting up default configurations
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -161,6 +162,10 @@ public class MainFXMLController implements Initializable {
         satellite.circle.setTranslateX(satellite.initialX);
         satellite.circle.setTranslateY(satellite.initialY);
 
+        // reset labels
+        elapsedTime = 0;
+        updateLabels();
+
         launchButton.setDisable(false);
     }
 
@@ -191,6 +196,10 @@ public class MainFXMLController implements Initializable {
 
             planets.clear();
         }
+
+        // reset labels
+        elapsedTime = 0;
+        updateLabels();
     }
 
     /**
@@ -203,16 +212,23 @@ public class MainFXMLController implements Initializable {
         speedSlider.setDisable(false);
         simulationSpeedHandler();
         running = true;
+        startTime = System.currentTimeMillis();
         updateSimulation();
         stopPlayButton.setDisable(false);
         launchButton.setDisable(true);
     }
 
+    /**
+     * When stop/play button is pressed, pauses movement and pauses time
+     *
+     * @param event triggered action event
+     */
     @FXML
     private void handleStopPlay(ActionEvent event) {
         if (running) {
             running = false;
             transition.stop();
+            elapsedTime += System.currentTimeMillis() - startTime;
             stopPlayButton.setStyle("-fx-background-color: #216e5a;"
                     + "-fx-font-family: consolas;"
                     + "-fx-text-fill: white;"
@@ -220,6 +236,7 @@ public class MainFXMLController implements Initializable {
             stopPlayButton.setText("Play");
         } else {
             running = true;
+            startTime = System.currentTimeMillis();
             updateSimulation();
             stopPlayButton.setStyle("-fx-background-color: #b54e64;"
                     + "-fx-font-family: consolas;"
@@ -376,7 +393,7 @@ public class MainFXMLController implements Initializable {
      * @param x x-position (0 = left edge)
      * @param y y-position (0 = top edge)
      * @param radius radius of the planet
-     * @param color colour of the planet
+     * @param color color of the planet
      */
     public void addPlanet(double x, double y, double radius, Color color) {
         // alerts user if planet overlaps with another
@@ -402,7 +419,7 @@ public class MainFXMLController implements Initializable {
      *
      * @param x x-position (0 = left edge)
      * @param y y-position (0 = top edge)
-     * @param color colour of satellite
+     * @param color color of satellite
      * @return true if satellite was added successfully, false if overlap prevented it
      */
     public boolean addSatellite(double x, double y, Color color) {
@@ -470,6 +487,9 @@ public class MainFXMLController implements Initializable {
 
             // if satellite intersects with a planet, crash and show crash label
             if (satellite != null && satellite.circle.getBoundsInParent().intersects(planet.circle.getBoundsInParent())) {
+                // update elapsed time to preserve time up to collision
+                elapsedTime += System.currentTimeMillis() - startTime;
+
                 // make satellite disappear, stop simulation
                 newSatelliteButton.setDisable(false);
                 launchButton.setDisable(true);
@@ -477,6 +497,8 @@ public class MainFXMLController implements Initializable {
                 resetAllButton.setDisable(planets.isEmpty());
                 simPane.getChildren().remove(satellite.circle);
                 crashLabel.setVisible(true);
+                stopPlayButton.setDisable(true);
+                speedSlider.setDisable(true);
                 pauseTrans.play();
                 break;
             }
@@ -498,8 +520,41 @@ public class MainFXMLController implements Initializable {
         transition.setByX(satellite.velX);
         transition.setByY(satellite.velY);
 
+        // update labels
+        updateLabels();
+
         // play transition
         transition.play();
+    }
+
+    /**
+     * Updates the time, velocity, and acceleration labels
+     */
+    private void updateLabels() {
+        // Calculate current elapsed time
+        long currentElapsed = elapsedTime;
+        if (running) {
+            currentElapsed += System.currentTimeMillis() - startTime;
+        }
+
+        // Displays time on top bar as minutes:seconds:milliseconds
+        long totalSeconds = currentElapsed / 1000;
+        long minutes = totalSeconds / 60;
+        long seconds = totalSeconds % 60;
+        long milliseconds = (currentElapsed % 1000) / 10;  // Two-digit milliseconds (00-99)
+        timeLabel.setText(String.format("%02d:%02d:%02d", minutes, seconds, milliseconds));
+
+        // Calculate velocity magnitude
+        if (satellite != null) {
+            double velocity = Math.hypot(satellite.velX, satellite.velY);
+            velocityLabel.setText(String.format("Velocity: %.2f AU/s", velocity));
+
+            double acceleration = Math.hypot(satellite.accX, satellite.accY);
+            accelerationLabel.setText(String.format("Acceleration: %.2f AU/s²", acceleration));
+        } else {
+            velocityLabel.setText("Velocity: 00.00 AU/s");
+            accelerationLabel.setText("Acceleration: 00.00 AU/s²");
+        }
     }
 
     /**
