@@ -67,8 +67,8 @@
                               <Insets top="30.0" />
                            </VBox.margin>
                         </Label>
-                        <Slider fx:id="speedSlider" majorTickUnit="0.25" min="1.0" max="10.0" onMouseReleased="#simulationSpeedHandler" showTickLabels="true" showTickMarks="true" style="-fx-control-inner-background: #94bdff; -fx-tick-mark-fill: #94bdff; -fx-tick-label-fill: white; -fx-minor-tick-count: 5;" value="1.0" />
-                        <Button fx:id="resetSatellitesButton" mnemonicParsing="false" onAction="#handleResetSatellite" prefHeight="25.0" prefWidth="122.0" style="-fx-background-color: #8a3b4f; -fx-text-fill: white; -fx-font-family: consolas;" text="Reset Satellites">
+                        <Slider fx:id="speedSlider" majorTickUnit="0.25" max="10.0" min="1.0" onMouseReleased="#simulationSpeedHandler" showTickLabels="true" showTickMarks="true" style="-fx-control-inner-background: #94bdff; -fx-tick-mark-fill: #94bdff; -fx-tick-label-fill: white; -fx-minor-tick-count: 5;" value="1.0" />
+                        <Button fx:id="resetSatellitesButton" mnemonicParsing="false" onAction="#handleResetSatellite" prefHeight="25.0" prefWidth="122.0" style="-fx-background-color: #8a3b4f; -fx-text-fill: white; -fx-font-family: consolas;" text="Reset Satellite">
                            <VBox.margin>
                               <Insets left="13.0" right="13.0" top="150.0" />
                            </VBox.margin>

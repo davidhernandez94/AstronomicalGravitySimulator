@@ -28,19 +28,27 @@ import javafx.util.Duration;
 
 /**
  * FXML Controller class
- *
+ * Git URL: https://github.com/davidhernandez94/AstronomicalGravitySimulator.git
  * @author Astghik Minasyan, David Hernandez, James Ha
  */
 public class MainFXMLController implements Initializable {
 
-    private Duration simulationSpeed; // duration of each individual transition of satellite
-    private TranslateTransition transition = new TranslateTransition(); // linear transition of satellite 
-    private boolean running = false; // true when animation is running
-    private PauseTransition pauseTrans = new PauseTransition(new Duration(1000)); // 1-second transition to show crash label
-    private long startTime = 0; // start time of simulation
-    private long elapsedTime = 0; // total elapsed time in milliseconds
-    ArrayList<Planet> planets = new ArrayList<>(); // list of planets currently in animation
-    Satellite satellite; // satellite of animation
+    // Duration of each individual transition of satellite
+    private Duration simulationSpeed;
+    // Linear transition of satellite
+    private TranslateTransition transition = new TranslateTransition();  
+    // True when animation is running
+    private boolean running = false; 
+    // 1-second transition to show crash label
+    private PauseTransition pauseTrans = new PauseTransition(new Duration(1000));
+    // Start time of simulation
+    private long startTime = 0; 
+    // Total elapsed time in milliseconds
+    private long elapsedTime = 0; 
+    // List of planets currently in animation
+    ArrayList<Planet> planets = new ArrayList<>(); 
+    // Satellite of animation
+    Satellite satellite; 
 
     @FXML
     private Button collapseButton;
@@ -78,34 +86,40 @@ public class MainFXMLController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Make the crash label invisible in the beginning
         crashLabel.setVisible(false);
+        // Disable the lauch button
         launchButton.setDisable(true);
+        // Disable the speed slider
         speedSlider.setDisable(true);
+        // Disable the reset all button
         resetAllButton.setDisable(true);
+        // Disable the stop play button
         stopPlayButton.setDisable(true);
 
-        // hides crash label once 1 second is over
+        // Hide crash label once 1 second is over
         pauseTrans.setOnFinished(eh -> crashLabel.setVisible(false));
 
-        // when transition is finished, run it again so that it's continuous 
-        // and there's smooth motion
+        // When transition is finished, run it again so that it's continuous 
+        // And there's smooth motion
         transition.setOnFinished(eh -> {
             if (running) {
                 updateSimulation();
             }
         });
 
+        // Call handleResetAll method
         handleResetAll();
     }
 
     /**
-     * collapse sidebar in main scene
+     * Collapse sidebar in main scene
      *
-     * @param event triggered action event
+     * @param event the triggered action event
      */
     @FXML
     private void collapseHandle(ActionEvent event) {
-        // moves sidebar outside/inside of scene by translation
+        // Move sidebar outside/inside of scene by translation
         if (sidebar.getTranslateX() == -180) {
             sidebar.setTranslateX(0);
 
@@ -115,44 +129,49 @@ public class MainFXMLController implements Initializable {
     }
 
     /**
-     * when newPlanetButton is clicked, open second window
+     * When newPlanetButton is clicked, open second window
      *
      * @param event triggered action event
      */
     @FXML
     private void handleNewPlanet(ActionEvent event) {
+        // Call newObjectWindow method
         newObjectWindow("Planet");
     }
 
     /**
-     * when newSatelliteButton is clicked, open second window
+     * When newSatelliteButton is clicked, open second window
      *
      * @param event triggered action event
      */
     @FXML
     private void handleNewSatellite(ActionEvent event) {
+        // Call newObjectWindow method
         newObjectWindow("Satellite");
     }
 
     /**
-     * when resetSatelliteButton is clicked, restart animation from beginning
-     * satellite fields all return to default values
+     * When resetSatelliteButton is clicked, restart animation from beginning
+     * Satellite fields all return to default values
      *
-     * @param event triggered action event
+     * @param event the triggered action event
      */
     @FXML
     private void handleResetSatellite(ActionEvent event) {
+        // Check if the satellite is initialized
         if (satellite == null) {
             return;
         }
 
+        // Make the satellite visible
         satellite.circle.setVisible(true);
 
-        // stop animation
+        // Stop animation
         transition.stop();
+        // The animation is not running
         running = false;
 
-        // reset satellite fields
+        // Reset satellite fields
         satellite.velX = 0;
         satellite.velY = 0;
         satellite.accX = 0;
@@ -160,35 +179,40 @@ public class MainFXMLController implements Initializable {
         satellite.posX = satellite.initialX;
         satellite.posY = satellite.initialY;
 
-        // bring satellite to original position
+        // Bring satellite to original position
         satellite.circle.setTranslateX(satellite.initialX);
         satellite.circle.setTranslateY(satellite.initialY);
 
-        // reset labels
+        // Reset labels
         elapsedTime = 0;
         updateLabels();
 
+        // Enable launch button
         launchButton.setDisable(false);
     }
 
     /**
-     * reset the whole scene
+     * Reset the whole scene by removing all planets and the satellite
      */
     @FXML
     private void handleResetAll() {
-        // remove satellite from simPane
+        // Remove satellite from simPane
         if (satellite != null) {
             if (satellite.circle != null) {
                 simPane.getChildren().remove(satellite.circle);
             }
 
+            // Delete the existing satellite
             satellite = null;
+            // Enable new satellite button
             newSatelliteButton.setDisable(false);
+            // Disable launch button
             launchButton.setDisable(true);
+            // The animation is not running
             running = false;
         }
 
-        // remove all planets from simPane
+        // Remove all planets from simPane
         if (!planets.isEmpty()) {
             for (Planet planet : planets) {
                 if (planet != null && planet.circle != null) {
@@ -196,50 +220,66 @@ public class MainFXMLController implements Initializable {
                 }
             }
 
+            // Clear the arraylist of planets
             planets.clear();
         }
 
-        // reset labels
+        // Reset labels
         elapsedTime = 0;
+        // Call updateLabels method
         updateLabels();
     }
 
     /**
-     * when updateSimulation button is clicked, call animation
+     * When updateSimulation button is clicked, call animation
      *
-     * @param event triggered action event
+     * @param event the triggered action event
      */
     @FXML
     private void handleLaunch(ActionEvent event) {
+        // Enable the speed slider
         speedSlider.setDisable(false);
+        // Call simulationSpeedHandeler method
         simulationSpeedHandler();
+        // The animation is now running
         running = true;
         startTime = System.currentTimeMillis();
+        // Call updateSimulation method
         updateSimulation();
+        // Enable stopPlay button
         stopPlayButton.setDisable(false);
+        // Disable launch button
         launchButton.setDisable(true);
     }
 
     /**
      * When stop/play button is pressed, pauses movement and pauses time
      *
-     * @param event triggered action event
+     * @param event the triggered action event
      */
     @FXML
     private void handleStopPlay(ActionEvent event) {
+        // Check if the animation is running
         if (running) {
+            // Stop animation if it is running
             running = false;
             transition.stop();
             elapsedTime += System.currentTimeMillis() - startTime;
+            
+            // Change pause button to play button
             stopPlayButton.setStyle("-fx-background-color: #216e5a;"
                     + "-fx-font-family: consolas;"
                     + "-fx-text-fill: white;"
                     + "-fx-font-weight: 900;");
             stopPlayButton.setText("Play");
         } else {
+            // Continue animation if it isn't running
             running = true;
             startTime = System.currentTimeMillis();
+            // Call updatSimulation method
             updateSimulation();
+            
+            // Change play button to play pause
             stopPlayButton.setStyle("-fx-background-color: #b54e64;"
                     + "-fx-font-family: consolas;"
                     + "-fx-text-fill: white;"
@@ -249,8 +289,8 @@ public class MainFXMLController implements Initializable {
     }
 
     /**
-     * second window: outside of first window, so MainFXML does not apply here.
-     * lets user create a new planet or satellite choices: colour, x-position,
+     * Second window: outside of first window, so MainFXML does not apply here.
+     * Lets user create a new planet or satellite choices: color, x-position,
      * y-position, and size (only for planets)
      *
      * @param name either "Satellite" or "Planet"
@@ -299,29 +339,29 @@ public class MainFXMLController implements Initializable {
                 + "-fx-font-family: consolas;"
                 + "-fx-text-fill: white;");
 
-        // settings for size slider
+        // Settings for size slider
         sizeSlider.setMajorTickUnit(10);
         sizeSlider.setShowTickMarks(true);
         sizeSlider.setShowTickLabels(true);
 
-        // satellite size is invariable, so disable the size slider
+        // Satellite size is invariable, so disable the size slider
         if (name.equals("Satellite")) {
             sizeSlider.setDisable(true);
         }
 
-        // setting for Hbox
+        // Setting for Hbox
         HBox coordinateBox = new HBox(xLabel, xfield, yLabel, yfield);
         coordinateBox.setSpacing(10);
         coordinateBox.setAlignment(Pos.CENTER);
 
-        // done button 
+        // Done button 
         Button doneButton = new Button("Done");
         doneButton.setStyle("-fx-background-color: #216e5a;"
                 + "-fx-font-family: consolas;"
                 + "-fx-text-fill: white;");
         doneButton.setDisable(true);
 
-        // settings for vbox
+        // Settings for vbox
         VBox layout = new VBox();
         layout.getChildren().addAll(sizeLabel, sizeSlider, colorLabel, colorPicker, coordinateBox, doneButton);
         layout.setPadding(new Insets(5, 5, 5, 5));
@@ -331,14 +371,14 @@ public class MainFXMLController implements Initializable {
                 + "-fx-font-family: consolas;"
                 + "-fx-text-fill: white;");
 
-        // initialize scene 
+        // Initialize scene 
         Scene secondaryScene = new Scene(layout, 500, 300);
         newObjectStage.setResizable(false);
         newObjectStage.setScene(secondaryScene);
         newObjectStage.show();
 
-        // handler that checks to see if values are integers
-        // note: planets can be placed outside of scene
+        // Handler that checks to see if values are positive integers
+        // Note: planets can be placed outside of scene
         EventHandler coordinateHandler = (EventHandler<KeyEvent>) ((KeyEvent) -> {
             if (xfield.getText().matches("^-?\\d+$") && yfield.getText().matches("^-?\\d+$")) {
                 doneButton.setDisable(false);
@@ -347,29 +387,34 @@ public class MainFXMLController implements Initializable {
             }
         });
 
-        // since a simple double value can't be changed within a lambda expresssion, 
-        // make it an array with only one element. 
-        // links radius of planet with size slider
+        // Since a simple double value can't be changed within a lambda expresssion, 
+        // Make it an array with only one element. 
+        // Links radius of planet with size slider
         double[] radius = new double[1];
         radius[0] = sizeSlider.getValue();
         sizeSlider.valueProperty().addListener(cl -> {
             radius[0] = sizeSlider.getValue();
         });
 
-        // check to see if x and y values are valid
+        // Check to see if x and y values are valid by calling the handler
         xfield.setOnKeyReleased(coordinateHandler);
         yfield.setOnKeyReleased(coordinateHandler);
 
-        // when done, make new planet/satellite and add to simPane
+        // When done is pressed, make new planet/satellite and add to simPane
         doneButton.setOnAction(e -> {
+            // If either fields are empty, attribute value 0
             double xProperty = xfield.getText().isEmpty() ? 0.0 : Double.parseDouble(xfield.getText());
             double yProperty = yfield.getText().isEmpty() ? 0.0 : Double.parseDouble(yfield.getText());
 
+            // Set color of the planet/ satellite
             Color color = colorPicker.getValue();
 
+            // Close the window
             newObjectStage.close();
 
+            // Check if the new object is a planet or satellite
             if (name.equals("Planet")) {
+                // Call addPlanet method
                 addPlanet(xProperty, yProperty, radius[0], color);
             } else {
                 if (addSatellite(xProperty, yProperty, color)) {
@@ -385,7 +430,7 @@ public class MainFXMLController implements Initializable {
      */
     @FXML
     public void simulationSpeedHandler() {
-        // here, the value 150 is what seems most ergonomic, not an exact constant
+        // Here, the value 150 is what seems most ergonomic, not an exact constant
         simulationSpeed = new Duration((int) (150 / speedSlider.getValue()));
     }
 
@@ -398,7 +443,7 @@ public class MainFXMLController implements Initializable {
      * @param color color of the planet
      */
     public void addPlanet(double x, double y, double radius, Color color) {
-        // alerts user if planet overlaps with another
+        // Alerts user if planet overlaps with another
         if (isOverlapping(x, y, radius)) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Invalid Position");
@@ -408,24 +453,26 @@ public class MainFXMLController implements Initializable {
             return;
         }
 
-        // make new planet and add it to simPane
+        // Make new planet and add it to simPane
         Planet planet = new Planet(x, y, radius, color);
         simPane.getChildren().add(planet.circle);
         planets.add(planet);
 
+        // Disable reset all button
         resetAllButton.setDisable(false);
     }
 
     /**
-     * add new satellite to simPane
+     * Add new satellite to simPane
      *
      * @param x x-position (0 = left edge)
      * @param y y-position (0 = top edge)
      * @param color color of satellite
-     * @return true if satellite was added successfully, false if overlap prevented it
+     * @return true if satellite was added successfully, false if overlap
+     * prevented it
      */
     public boolean addSatellite(double x, double y, Color color) {
-        // alerts user if satellite overlaps with planet
+        // Alerts user if satellite overlaps with planet
         if (isOverlapping(x, y, Satellite.RADIUS)) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Invalid Position");
@@ -435,35 +482,35 @@ public class MainFXMLController implements Initializable {
             return false;
         }
 
-        // add new satellite to simPane
+        // Add new satellite to simPane
         satellite = new Satellite(x, y, color);
         satellite.circle.setVisible(true);
         simPane.getChildren().add(satellite.circle);
 
-        // change accessibility of certain buttons 
+        // Change accessibility of certain buttons 
         resetAllButton.setDisable(false);
         return true;
     }
 
     /**
-     * animation for the satellite, run many times per second
+     * Animation for the satellite, run many times per second
+     * Main simulation is here
      */
     public void updateSimulation() {
-        // main simulation is here
         running = true;
 
-        // set length of animation 
+        // Set length of animation 
         transition.setDuration(simulationSpeed);
 
-        // force is set to 0
-        // the gravitational pull of the planets will change it
+        // Force is set to 0
+        // The gravitational pull of the planets will change it
         double forceX = 0;
         double forceY = 0;
 
-        // iterate through each planet in planets list
-        // for each, add its gravitational force to forceX and forceY
+        // Iterate through each planet in planets list
+        // For each, add its gravitational force to forceX and forceY
         for (Planet planet : planets) {
-            // distance between satellite and planet using a^2 + b^2 = c^2
+            // Distance between satellite and planet using a^2 + b^2 = c^2
             double distance = Math.hypot(planet.x - satellite.posX, planet.y - satellite.posY);
 
             /*
@@ -487,17 +534,18 @@ public class MainFXMLController implements Initializable {
             forceY += (planet.mass * satellite.mass * Math.abs(planet.y - satellite.posY) / Math.pow(distance, 2))
                     * (planet.y > satellite.posY ? 1 : -1);
 
-            // if satellite intersects with a planet, crash and show crash label
+            // Ff satellite intersects with a planet, crash and show crash label
             if (satellite != null && satellite.circle.getBoundsInParent().intersects(planet.circle.getBoundsInParent())) {
-                // update elapsed time to preserve time up to collision
+                // Update elapsed time to preserve time up to collision
                 elapsedTime += System.currentTimeMillis() - startTime;
 
-                // make satellite disappear, stop simulation
+                // Make satellite disappear, stop simulation
                 newSatelliteButton.setDisable(false);
                 launchButton.setDisable(true);
                 running = false;
+                // Disable reset all button if planets is empty
                 resetAllButton.setDisable(planets.isEmpty());
-                simPane.getChildren().remove(satellite.circle);
+                satellite.circle.setVisible(true);
                 crashLabel.setVisible(true);
                 stopPlayButton.setDisable(true);
                 speedSlider.setDisable(true);
@@ -506,13 +554,14 @@ public class MainFXMLController implements Initializable {
             }
         }
 
+        // Make satellite invisible if its position is less than 0
         if (satellite.posX < 0 || satellite.posY < 0) {
             satellite.circle.setVisible(false);
         } else {
             satellite.circle.setVisible(true);
         }
 
-        // update satellite's and transition's fields
+        // Ipdate satellite's and transition's fields
         satellite.circle.toFront();
         satellite.accX = forceX / 800;
         satellite.accY = forceY / 800;
@@ -522,10 +571,10 @@ public class MainFXMLController implements Initializable {
         transition.setByX(satellite.velX);
         transition.setByY(satellite.velY);
 
-        // update labels
+        // Update labels
         updateLabels();
 
-        // play transition
+        // Play transition
         transition.play();
     }
 
@@ -560,7 +609,7 @@ public class MainFXMLController implements Initializable {
     }
 
     /**
-     * checks to see if a new planet overlaps with another planet or satellite
+     * Checks to see if a new planet overlaps with another planet or satellite
      *
      * @param x x position of new planet
      * @param y y position of new planet
@@ -569,19 +618,21 @@ public class MainFXMLController implements Initializable {
      */
     public boolean isOverlapping(double x, double y, double radius) {
         for (Planet p : planets) {
+            // Determine distance between planets
             double dist = Math.hypot(p.x - x, p.y - y);
             if (dist < p.radius + radius) {
-                return true;
+                return true; // The planets are overlapping
             }
         }
 
         if (satellite != null) {
+            // Determine distance between the satellite and planet
             double dist = Math.hypot(satellite.posX - x, satellite.posY - y);
             if (dist < satellite.circle.getRadius() + radius) {
-                return true;
+                return true; // The objects overlap
             }
         }
 
-        return false;
+        return false; // The planets/satellite don't overlap
     }
 }
